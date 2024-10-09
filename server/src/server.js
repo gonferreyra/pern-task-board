@@ -1,8 +1,9 @@
 import express from 'express';
 import 'dotenv/config';
-import { loggerMiddleware } from './middlewares/loggerHandler.js';
+import { loggerMiddleware } from './middlewares/logger-handler.js';
 import logger from './config/logger.js';
 import { SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
+import errorHandlerMiddleware from './middlewares/error-handler.js';
 
 const app = express();
 
@@ -14,11 +15,13 @@ const Main = () => {
 
   // Middelwares
   app.use(loggerMiddleware);
-  console.log(process.env.PORT);
 
   app.listen(SERVER_PORT, () => {
     logger.info(`Server Started from ${SERVER_HOSTNAME}:${SERVER_PORT}`);
   });
+
+  // error handler middleware
+  app.use(errorHandlerMiddleware);
 };
 
 Main();

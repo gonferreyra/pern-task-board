@@ -8,6 +8,9 @@ const __dirname = dirname(__filename);
 const logger = createLogger({
   level: 'info',
   format: format.combine(
+    format.errors({ stack: true }),
+    format.splat(),
+    format.json(),
     format.colorize(),
     format.simple(),
     format.timestamp({
