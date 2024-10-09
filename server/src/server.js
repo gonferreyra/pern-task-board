@@ -16,12 +16,17 @@ const Main = () => {
   // Middelwares
   app.use(loggerMiddleware);
 
-  app.listen(SERVER_PORT, () => {
-    logger.info(`Server Started from ${SERVER_HOSTNAME}:${SERVER_PORT}`);
+  // Routes
+  app.get('/', (req, res) => {
+    res.status(200).send('Get request OK');
   });
 
   // error handler middleware
   app.use(errorHandlerMiddleware);
+
+  app.listen(SERVER_PORT, () => {
+    logger.info(`Server Started from ${SERVER_HOSTNAME}:${SERVER_PORT}`);
+  });
 };
 
 Main();
