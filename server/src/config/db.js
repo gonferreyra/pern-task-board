@@ -17,7 +17,18 @@ const DB = new Sequelize(database, user, password, {
   host: host,
   dialect: 'postgres',
   // show SQL commands on console
-  logging: true,
+  logging: false,
 });
 
-export default DB;
+// DB connection
+async function dbConnection() {
+  try {
+    await DB.sync();
+    // logger.info('DB Connected successfully');
+  } catch (error) {
+    throw new Error(`Error connecting to DB: ${error.message}`);
+  }
+}
+dbConnection();
+
+export default dbConnection;
