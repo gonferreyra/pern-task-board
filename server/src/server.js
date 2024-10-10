@@ -1,10 +1,12 @@
 import express from 'express';
 import 'dotenv/config';
+import cors from 'cors';
 import { loggerMiddleware } from './middlewares/logger-handler.js';
 import logger from './config/logger.js';
 import { SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
 import errorHandlerMiddleware from './middlewares/error-handler.js';
 import dbConnection from './config/db.js';
+import userRoutes from './routes/user.route.js';
 
 const app = express();
 
@@ -13,6 +15,14 @@ const Main = async () => {
   app.use(express.urlencoded({ extended: true }));
   // JSON - reading and parsing body
   app.use(express.json());
+  app.use(
+    cors({
+      origin: '*',
+      credentials: true,
+    })
+  );
+  // Logger Middleware
+  app.use(loggerMiddleware);
 
   // db connection
   await dbConnection().then(() => logger.info('DB Connected successfully'));
@@ -21,8 +31,10 @@ const Main = async () => {
     res.status(200).send('Get request OK');
   });
 
-  // Middelwares
-  app.use(loggerMiddleware);
+  // Routes
+  app.use('/user', userRoutes);
+
+  // Error Middleware (always at the end)
   app.use(errorHandlerMiddleware);
 
   app.listen(SERVER_PORT, async () => {
