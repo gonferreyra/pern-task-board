@@ -11,7 +11,6 @@ const host = DB_HOST;
 const user = DB_USER;
 const database = DB_NAME;
 const password = DB_PASSWORD;
-const port = DB_PORT;
 
 const DB = new Sequelize(database, user, password, {
   host: host,
@@ -24,7 +23,6 @@ const DB = new Sequelize(database, user, password, {
 async function dbConnection() {
   try {
     await DB.sync();
-    // logger.info('DB Connected successfully');
   } catch (error) {
     throw new Error(`Error connecting to DB: ${error.message}`);
   }
