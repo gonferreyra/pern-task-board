@@ -8,12 +8,14 @@ import dbConnection from './config/db.js';
 
 const app = express();
 
-const Main = () => {
+const Main = async () => {
   // URL - reading and parsing body
   app.use(express.urlencoded({ extended: true }));
   // JSON - reading and parsing body
   app.use(express.json());
 
+  // db connection
+  await dbConnection().then(() => logger.info('DB Connected successfully'));
   // Routes
   app.get('/', (req, res) => {
     res.status(200).send('Get request OK');
@@ -25,8 +27,6 @@ const Main = () => {
 
   app.listen(SERVER_PORT, async () => {
     logger.info(`Server Started from ${SERVER_HOSTNAME}:${SERVER_PORT}`);
-    // Database connection
-    await dbConnection().then(() => logger.info('DB Connected successfully'));
   });
 };
 
