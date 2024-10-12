@@ -47,6 +47,7 @@ export const createAccount = async (data) => {
     },
     JWT_REFRESH_SECRET,
     {
+      audience: ['user'],
       expiresIn: '30d',
     }
   );
@@ -58,6 +59,7 @@ export const createAccount = async (data) => {
     },
     JWT_SECRET,
     {
+      audience: ['user'],
       expiresIn: '15m',
     }
   );
@@ -69,6 +71,56 @@ export const createAccount = async (data) => {
       email: newUser.email,
       createdAt: newUser.createdAt,
       updatedAt: newUser.updatedAt,
+    },
+    accessToken,
+    refreshToken,
+  };
+};
+
+export const login = async ({ email, password, userAgent }) => {
+  // get user by email
+  const user = await UserModel.findOne({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new CustomError('Invalid email', 404);
+  }
+
+  // validate password
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new CustomError('Invalid password', 401);
+  }
+
+  // create a session
+  const session = await SessionModel.create({
+    userId: user.id,
+    userAgent,
+  });
+
+  // token payload - session id
+  // const payload = { sessionId: session.id };
+
+  // sign access token & refresh token
+  const refreshToken = jwt.sign({ sessionId: session.id }, JWT_REFRESH_SECRET, {
+    audience: ['user'],
+    expiresIn: '30d',
+  });
+
+  const userId = user._id;
+  const accessToken = jwt.sign({ ...session.id, userId }, JWT_SECRET, {
+    audience: ['user'],
+    expiresIn: '15m',
+  });
+
+  return {
+    user: {
+      id: user.id,
+      email: user.email,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     },
     accessToken,
     refreshToken,
