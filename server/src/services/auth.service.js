@@ -38,6 +38,7 @@ export const createAccount = async (data) => {
   // create session
   const session = await SessionModel.create({
     userId: newUser.id,
+    userAgent: data.userAgent,
   });
   // sign access token & refresh token
   const refreshToken = jwt.sign(

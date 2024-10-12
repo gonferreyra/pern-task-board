@@ -7,6 +7,10 @@ const SessionModel = sequelize.define('Session', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
+  userAgent: {
+    type: DataTypes.STRING,
+    allowNull: true,
+  },
   createdAt: {
     type: DataTypes.DATE,
     allowNull: false,

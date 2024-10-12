@@ -7,10 +7,15 @@ const registerSchema = z.object({
   password: z.string().min(6).max(20),
 });
 
+const loginSchema = registerSchema.extend();
+
 export const registerHandler = async (req, res, next) => {
   try {
     // validate request
-    const request = registerSchema.parse(req.body);
+    const request = registerSchema.parse({
+      ...req.body,
+      userAgent: req.headers['user-agent'],
+    });
 
     // call service
     const { user, accessToken, refreshToken } = await services.createAccount(
