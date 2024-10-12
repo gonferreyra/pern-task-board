@@ -100,17 +100,14 @@ export const login = async ({ email, password, userAgent }) => {
     userAgent,
   });
 
-  // token payload - session id
-  // const payload = { sessionId: session.id };
-
   // sign access token & refresh token
   const refreshToken = jwt.sign({ sessionId: session.id }, JWT_REFRESH_SECRET, {
     audience: ['user'],
     expiresIn: '30d',
   });
 
-  const userId = user._id;
-  const accessToken = jwt.sign({ ...session.id, userId }, JWT_SECRET, {
+  const userId = user.id;
+  const accessToken = jwt.sign({ sessionId: session.id, userId }, JWT_SECRET, {
     audience: ['user'],
     expiresIn: '15m',
   });
