@@ -7,6 +7,7 @@ import { SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
 import errorHandlerMiddleware from './middlewares/error-handler.js';
 import dbConnection from './config/db.js';
 import userRoutes from './routes/user.route.js';
+import authRoutes from './routes/auth.route.js';
 
 const app = express();
 
@@ -30,6 +31,9 @@ const Main = async () => {
   app.get('/', (req, res) => {
     res.status(200).send('Get request OK');
   });
+
+  // Authentication routes
+  app.use('/auth', authRoutes);
 
   // Routes
   app.use('/user', userRoutes);
