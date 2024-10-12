@@ -1,6 +1,12 @@
 import { z } from 'zod';
 import * as services from '../services/auth.service.js';
-import { setAuthenticationCookies } from '../utils/cookies.js';
+import {
+  clearAuthenticationCookies,
+  setAuthenticationCookies,
+} from '../utils/cookies.js';
+import { JWT_SECRET } from '../constants/env.js';
+import jwt from 'jsonwebtoken';
+import SessionModel from '../models/session.model.js';
 
 const registerSchema = z.object({
   email: z.string().email().min(6).max(255),
@@ -34,7 +40,10 @@ export const registerHandler = async (req, res, next) => {
 export const loginHandler = async (req, res, next) => {
   try {
     // validate request
-    const request = loginSchema.parse(req.body);
+    const request = loginSchema.parse({
+      ...req.body,
+      userAgent: req.headers['user-agent'],
+    });
 
     // call service
     const { user, accessToken, refreshToken } = await services.login(request);
@@ -49,3 +58,39 @@ export const loginHandler = async (req, res, next) => {
     next(error);
   }
 };
+
+export const logoutHandler = async (req, res, next) => {
+  try {
+    // validate request
+    const accessToken = req.cookies.accessToken;
+    const payload = verifyToken(accessToken);
+    console.log(payload);
+
+    if (payload) {
+      await SessionModel.destroy({
+        where: {
+          id: payload.sessionId,
+        },
+      });
+    }
+
+    //clear cookies
+    clearAuthenticationCookies(res)
+      .status(200)
+      .json({ message: 'Logout succesfull' });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verifyToken = (token, options) => {
+  try {
+    const payload = jwt.verify(token, JWT_SECRET, {
+      audience: ['user'],
+    });
+    return payload;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+// ver error cuando no hay accessToken
