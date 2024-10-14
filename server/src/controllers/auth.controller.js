@@ -7,6 +7,9 @@ import {
 import { JWT_SECRET } from '../constants/env.js';
 import jwt from 'jsonwebtoken';
 import SessionModel from '../models/session.model.js';
+import { CustomError } from '../helpers/customError.js';
+import { verifyToken } from '../utils/jwt.js';
+import { fifteenMinutesFromNow, thirtyDaysFromNow } from '../utils/date.js';
 
 const registerSchema = z.object({
   email: z.string().email().min(6).max(255),
@@ -15,6 +18,8 @@ const registerSchema = z.object({
 });
 
 const loginSchema = registerSchema.extend();
+
+const secure = process.env.NODE_ENV === 'production';
 
 export const registerHandler = async (req, res, next) => {
   try {
@@ -82,14 +87,42 @@ export const logoutHandler = async (req, res, next) => {
   }
 };
 
-const verifyToken = (token, options) => {
+export const refreshHandler = async (req, res, next) => {
   try {
-    const payload = jwt.verify(token, JWT_SECRET, {
-      audience: ['user'],
-    });
-    return payload;
+    // validate request
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      throw new CustomError('Missing refresh token', 401);
+    }
+
+    // call service
+    const { accessToken, newRefreshToken } =
+      await services.refreshUserAccessToken(refreshToken);
+
+    // set cookies
+    if (newRefreshToken) {
+      res.cookie('refreshToken', newRefreshToken, {
+        sameSite: 'strict',
+        httpOnly: true,
+        secure,
+        expires: thirtyDaysFromNow(),
+        path: '/auth/refresh',
+      });
+    }
+
+    res
+      .status(200)
+      .cookie('accessToken', accessToken, {
+        sameSite: 'strict',
+        httpOnly: true,
+        secure,
+        expires: fifteenMinutesFromNow(),
+      })
+      .json({
+        message: 'Access token refreshed',
+      });
   } catch (error) {
-    throw new Error(error.message);
+    next(error);
   }
 };
-// ver error cuando no hay accessToken

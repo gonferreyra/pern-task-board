@@ -6,6 +6,7 @@ import VerificationCodeModel from '../models/verificationCode.model.js';
 import { threeDaysFromNow } from '../utils/date.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
+import { verifyToken } from '../utils/jwt.js';
 
 export const createAccount = async (data) => {
   // verify existing user
@@ -121,5 +122,49 @@ export const login = async ({ email, password, userAgent }) => {
     },
     accessToken,
     refreshToken,
+  };
+};
+
+export const refreshUserAccessToken = async (refreshToken) => {
+  // verify token
+  const payload = verifyToken(refreshToken);
+  console.log(payload.sessionId);
+
+  if (!payload) {
+    throw new CustomError('Invalid refresh token', 401);
+  }
+
+  // validate session
+  const session = await SessionModel.findByPk(payload.sessionId);
+  if (!session && session.expiresAt > Date.now()) {
+    throw new CustomError('Session expired', 401);
+  }
+
+  const newRefreshToken = jwt.sign(
+    {
+      sessionId: session.id,
+    },
+    JWT_REFRESH_SECRET,
+    {
+      audience: ['user'],
+      expiresIn: '30d',
+    }
+  );
+
+  const accessToken = jwt.sign(
+    {
+      userId: session.userId,
+      sessionId: session.id,
+    },
+    JWT_SECRET,
+    {
+      audience: ['user'],
+      expiresIn: '15m',
+    }
+  );
+
+  return {
+    accessToken,
+    newRefreshToken,
   };
 };
