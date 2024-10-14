@@ -64,7 +64,6 @@ export const logoutHandler = async (req, res, next) => {
     // validate request
     const accessToken = req.cookies.accessToken;
     const payload = verifyToken(accessToken);
-    console.log(payload);
 
     if (payload) {
       await SessionModel.destroy({
