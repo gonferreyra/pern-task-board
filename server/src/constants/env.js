@@ -8,6 +8,10 @@ const getEnv = (key) => {
   return value;
 };
 
+// ENVIROMENT
+export const NODE_ENV = getEnv('NODE_ENV');
+
+// SERVER
 export const SERVER_PORT = getEnv('SERVER_PORT');
 export const SERVER_HOSTNAME = getEnv('SERVER_HOSTNAME');
 
@@ -21,3 +25,10 @@ export const DB_PASSWORD = getEnv('DB_PASSWORD');
 // JWT
 export const JWT_SECRET = getEnv('JWT_SECRET');
 export const JWT_REFRESH_SECRET = getEnv('JWT_REFRESH_SECRET');
+
+// RESEND
+export const RESEND_API_KEY = getEnv('RESEND_API_KEY');
+export const EMAIL_SENDER = getEnv('EMAIL_SENDER');
+
+// FRONTEND URL
+export const APP_ORIGIN = getEnv('APP_ORIGIN');
