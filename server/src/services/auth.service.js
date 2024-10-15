@@ -1,4 +1,8 @@
-import { JWT_REFRESH_SECRET, JWT_SECRET } from '../constants/env.js';
+import {
+  APP_ORIGIN,
+  JWT_REFRESH_SECRET,
+  JWT_SECRET,
+} from '../constants/env.js';
 import { CustomError } from '../helpers/customError.js';
 import SessionModel from '../models/session.model.js';
 import UserModel from '../models/user.model.js';
@@ -8,6 +12,8 @@ import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { verifyToken } from '../utils/jwt.js';
 import { Sequelize } from 'sequelize';
+import { sendMail } from '../utils/send-mail.js';
+import { getVerifyEmailTemplate } from '../utils/email-templates.js';
 
 export const createAccount = async (data) => {
   // verify existing user
@@ -35,7 +41,14 @@ export const createAccount = async (data) => {
     type: 'email-verification',
     expiresAt: threeDaysFromNow(),
   });
-  // send verification email - TODO
+
+  // send verification email
+  const url = `${APP_ORIGIN}/email/verify/${verificationCode.id}`;
+
+  await sendMail({
+    to: newUser.email,
+    ...getVerifyEmailTemplate(url),
+  });
 
   // create session
   const session = await SessionModel.create({
