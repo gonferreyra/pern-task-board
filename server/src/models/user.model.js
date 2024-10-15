@@ -1,5 +1,7 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
+import SessionModel from './session.model.js';
+import VerificationCodeModel from './verificationCode.model.js';
 
 const UserModel = sequelize.define(
   'User',
@@ -32,5 +34,17 @@ const UserModel = sequelize.define(
     timestamps: true, // make sure sequelize handle this fields automatically
   }
 );
+
+// relations User => Sessions
+UserModel.hasMany(SessionModel, { foreignKey: 'userId' });
+SessionModel.belongsTo(UserModel, { foreignKey: 'userId' });
+
+// relations User => VerificationCode
+UserModel.hasMany(VerificationCodeModel, {
+  foreignKey: 'userId',
+});
+VerificationCodeModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+});
 
 export default UserModel;

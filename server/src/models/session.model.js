@@ -3,10 +3,6 @@ import { sequelize } from '../config/db.js';
 import { thirtyDaysFromNow } from '../utils/date.js';
 
 const SessionModel = sequelize.define('Session', {
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   userAgent: {
     type: DataTypes.STRING,
     allowNull: true,
