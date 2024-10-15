@@ -4,8 +4,6 @@ import {
   clearAuthenticationCookies,
   setAuthenticationCookies,
 } from '../utils/cookies.js';
-import { JWT_SECRET } from '../constants/env.js';
-import jwt from 'jsonwebtoken';
 import SessionModel from '../models/session.model.js';
 import { CustomError } from '../helpers/customError.js';
 import { verifyToken } from '../utils/jwt.js';
@@ -122,6 +120,25 @@ export const refreshHandler = async (req, res, next) => {
       .json({
         message: 'Access token refreshed',
       });
+  } catch (error) {
+    next(error);
+  }
+};
+
+const verificationCodeSchema = z.string().min(1).max(36);
+
+export const verifyEmailHandler = async (req, res, next) => {
+  try {
+    // validate request
+    const verificationCode = verificationCodeSchema.parse(req.params.code);
+
+    // call service
+    await services.verifyEmail(verificationCode);
+
+    // response
+    res.status(200).json({
+      message: 'Email verified successfully',
+    });
   } catch (error) {
     next(error);
   }

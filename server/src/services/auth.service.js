@@ -7,6 +7,7 @@ import { threeDaysFromNow } from '../utils/date.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { verifyToken } from '../utils/jwt.js';
+import { Sequelize } from 'sequelize';
 
 export const createAccount = async (data) => {
   // verify existing user
@@ -128,7 +129,6 @@ export const login = async ({ email, password, userAgent }) => {
 export const refreshUserAccessToken = async (refreshToken) => {
   // verify token
   const payload = verifyToken(refreshToken);
-  console.log(payload.sessionId);
 
   if (!payload) {
     throw new CustomError('Invalid refresh token', 401);
@@ -166,5 +166,52 @@ export const refreshUserAccessToken = async (refreshToken) => {
   return {
     accessToken,
     newRefreshToken,
+  };
+};
+
+export const verifyEmail = async (code) => {
+  // get verification code
+  const verificationCode = await VerificationCodeModel.findOne({
+    where: {
+      id: code,
+      type: 'email-verification',
+      expiresAt: {
+        // grater or equal to current time
+        [Sequelize.Op.gte]: Date.now(),
+      },
+    },
+  });
+  if (!verificationCode) {
+    throw new CustomError('Invalid or expired verification code', 404);
+  }
+
+  // update user
+  const updatedUser = await UserModel.update(
+    {
+      verified: true,
+    },
+    {
+      where: {
+        id: verificationCode.userId,
+      },
+    }
+  );
+
+  if (!updatedUser) {
+    throw new CustomError('Failed to verify email', 500);
+  }
+
+  // delete verification code
+  await verificationCode.destroy();
+
+  // return user
+  return {
+    user: {
+      id: updatedUser.userId,
+      email: updatedUser.email,
+      verified: updatedUser.verified,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    },
   };
 };
