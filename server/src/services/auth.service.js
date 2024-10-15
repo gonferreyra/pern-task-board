@@ -13,7 +13,10 @@ import bcrypt from 'bcrypt';
 import { verifyToken } from '../utils/jwt.js';
 import { Sequelize } from 'sequelize';
 import { sendMail } from '../utils/send-mail.js';
-import { getVerifyEmailTemplate } from '../utils/email-templates.js';
+import {
+  getPasswordResetTemplate,
+  getVerifyEmailTemplate,
+} from '../utils/email-templates.js';
 
 export const createAccount = async (data) => {
   // verify existing user
@@ -226,5 +229,62 @@ export const verifyEmail = async (code) => {
       createdAt: updatedUser.createdAt,
       updatedAt: updatedUser.updatedAt,
     },
+  };
+};
+
+export const sendPasswordResetEmail = async (email) => {
+  // get user by email
+  const user = await UserModel.findOne({
+    where: {
+      email,
+    },
+  });
+  if (!user) {
+    throw new CustomError('User not found', 404);
+  }
+
+  // check email rate limit - don't allow more than 1 requests in 5 minutes
+  const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+  const count = await VerificationCodeModel.findAndCountAll({
+    where: {
+      type: 'password-reset',
+      userId: user.id,
+      createdAt: {
+        [Sequelize.Op.gte]: fiveMinutesAgo,
+      },
+    },
+  });
+
+  if (count.count >= 1) {
+    throw new CustomError('Too many password reset requests', 429);
+  }
+
+  // create verification code
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000);
+  const verificationCode = await VerificationCodeModel.create({
+    userId: user.id,
+    type: 'password-reset',
+    expiresAt,
+  });
+
+  // send verification email with code and expiresAt. If it's expired, the code will be invalid
+  const url = `${APP_ORIGIN}/password/reset?code=${
+    verificationCode.id
+  }&exp=${expiresAt.getTime()}`;
+
+  // send email
+  const { data, error } = await sendMail({
+    to: user.email,
+    ...getPasswordResetTemplate(url),
+  });
+
+  if (!data.id) {
+    throw new CustomError(`${error?.name} - ${error?.message}`, 500);
+  }
+
+  // return
+  return {
+    url,
+    emailId: data?.id,
   };
 };

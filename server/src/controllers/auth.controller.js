@@ -9,8 +9,10 @@ import { CustomError } from '../helpers/customError.js';
 import { verifyToken } from '../utils/jwt.js';
 import { fifteenMinutesFromNow, thirtyDaysFromNow } from '../utils/date.js';
 
+const emailSchema = z.string().email().min(6).max(255);
+
 const registerSchema = z.object({
-  email: z.string().email().min(6).max(255),
+  email: emailSchema,
   password: z.string().min(6).max(20),
   userAgent: z.string().optional(),
 });
@@ -138,6 +140,23 @@ export const verifyEmailHandler = async (req, res, next) => {
     // response
     res.status(200).json({
       message: 'Email verified successfully',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const sendPasswordResetHandler = async (req, res, next) => {
+  try {
+    // validate request
+    const email = emailSchema.parse(req.body.email);
+
+    // call service
+    await services.sendPasswordResetEmail(email);
+
+    // response
+    res.status(200).json({
+      message: 'Password reset email sent',
     });
   } catch (error) {
     next(error);
