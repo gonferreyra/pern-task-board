@@ -10,14 +10,22 @@ import { verifyToken } from '../utils/jwt.js';
 import { fifteenMinutesFromNow, thirtyDaysFromNow } from '../utils/date.js';
 
 const emailSchema = z.string().email().min(6).max(255);
+const passwordSchema = z.string().min(6).max(20);
 
 const registerSchema = z.object({
   email: emailSchema,
-  password: z.string().min(6).max(20),
+  password: passwordSchema,
   userAgent: z.string().optional(),
 });
 
 const loginSchema = registerSchema.extend();
+
+const verificationCodeSchema = z.string().min(1).max(36);
+
+const resetPasswordSchema = z.object({
+  password: passwordSchema,
+  verificationCode: verificationCodeSchema,
+});
 
 const secure = process.env.NODE_ENV === 'production';
 
@@ -127,8 +135,6 @@ export const refreshHandler = async (req, res, next) => {
   }
 };
 
-const verificationCodeSchema = z.string().min(1).max(36);
-
 export const verifyEmailHandler = async (req, res, next) => {
   try {
     // validate request
@@ -157,6 +163,23 @@ export const sendPasswordResetHandler = async (req, res, next) => {
     // response
     res.status(200).json({
       message: 'Password reset email sent',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPasswordHandler = async (req, res, next) => {
+  try {
+    // validate request
+    const request = resetPasswordSchema.parse(req.body);
+
+    // call service
+    await services.resetPassword(request);
+
+    // response - clear cookies
+    clearAuthenticationCookies(res).status(200).json({
+      message: 'Password reset successful',
     });
   } catch (error) {
     next(error);

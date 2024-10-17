@@ -288,3 +288,64 @@ export const sendPasswordResetEmail = async (email) => {
     emailId: data?.id,
   };
 };
+
+export const resetPassword = async ({ password, verificationCode }) => {
+  // get verification code
+  const verification = await VerificationCodeModel.findOne({
+    where: {
+      id: verificationCode,
+      type: 'password-reset',
+      expiresAt: {
+        // grater or equal to current time
+        [Sequelize.Op.gte]: Date.now(),
+      },
+    },
+  });
+  if (!verification) {
+    throw new CustomError('Invalid or expired verification code', 404);
+  }
+  // console.log(verification.dataValues.userId);
+
+  // find user
+  const user = await UserModel.findByPk(verification.dataValues.userId);
+  if (!user) {
+    throw new CustomError('User not found', 404);
+  }
+
+  // encrypt password and send it to the DB
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // update user password
+  const updatedUser = await UserModel.update(
+    {
+      password: hashedPassword,
+    },
+    {
+      where: {
+        id: user.id,
+      },
+    }
+  );
+  if (!updatedUser) {
+    throw new CustomError('Failed to reset password', 500);
+  }
+  // delete verification code
+  await verification.destroy();
+
+  // delete all sessions for user
+  await SessionModel.destroy({
+    where: {
+      userId: user.id,
+    },
+  });
+
+  // return
+  return {
+    user: {
+      id: updatedUser.id,
+      verified: updatedUser.verified,
+      createdAt: updatedUser.createdAt,
+      updatedAt: updatedUser.updatedAt,
+    },
+  };
+};
