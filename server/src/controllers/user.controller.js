@@ -5,19 +5,17 @@ export const getUserHandler = async (req, res, next) => {
   try {
     // request is already validate with autheticate middelware
     console.log(req.userId);
-    const user = await UserModel.findByPk(req.userId);
+    const user = await UserModel.findByPk(req.userId, {
+      attributes: {
+        exclude: ['password'],
+      },
+    });
     if (!user) {
       throw new CustomError('User not found', 404);
     }
 
     res.status(200).json({
-      user: {
-        id: user.id,
-        email: user.email,
-        verified: user.verified,
-        createdAt: user.createdAt,
-        updatedAt: user.updatedAt,
-      },
+      user,
     });
   } catch (error) {
     next(error);

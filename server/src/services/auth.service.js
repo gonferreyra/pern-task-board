@@ -210,6 +210,7 @@ export const verifyEmail = async (code) => {
       where: {
         id: verificationCode.userId,
       },
+      attributes: { exclude: ['password'] },
     }
   );
 
@@ -222,13 +223,7 @@ export const verifyEmail = async (code) => {
 
   // return user
   return {
-    user: {
-      id: updatedUser.userId,
-      email: updatedUser.email,
-      verified: updatedUser.verified,
-      createdAt: updatedUser.createdAt,
-      updatedAt: updatedUser.updatedAt,
-    },
+    user,
   };
 };
 
