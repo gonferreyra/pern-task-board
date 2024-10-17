@@ -22,3 +22,14 @@ export const verifyToken = (token, tokenType) => {
     };
   }
 };
+
+export const signToken = (payload, tokenType, expirationTime) => {
+  const secret = tokenSecrets[tokenType];
+  if (!secret) {
+    throw new Error(`Invalid token type ${tokenType}`);
+  }
+  return jwt.sign(payload, secret, {
+    audience: ['user'],
+    expiresIn: expirationTime,
+  });
+};

@@ -1,16 +1,11 @@
-import {
-  APP_ORIGIN,
-  JWT_REFRESH_SECRET,
-  JWT_SECRET,
-} from '../constants/env.js';
+import { APP_ORIGIN } from '../constants/env.js';
 import { CustomError } from '../helpers/customError.js';
 import SessionModel from '../models/session.model.js';
 import UserModel from '../models/user.model.js';
 import VerificationCodeModel from '../models/verificationCode.model.js';
 import { threeDaysFromNow } from '../utils/date.js';
-import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { verifyToken } from '../utils/jwt.js';
+import { signToken, verifyToken } from '../utils/jwt.js';
 import { Sequelize } from 'sequelize';
 import { sendMail } from '../utils/send-mail.js';
 import {
@@ -59,28 +54,24 @@ export const createAccount = async (data) => {
     userAgent: data.userAgent,
   });
   // sign access token & refresh token
-  const refreshToken = jwt.sign(
+
+  const refreshToken = signToken(
     {
       sessionId: session.id,
     },
-    JWT_REFRESH_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '30d',
-    }
+    'refreshToken',
+    '30d'
   );
 
-  const accessToken = jwt.sign(
+  const accessToken = signToken(
     {
       userId: newUser.id,
       sessionId: session.id,
     },
-    JWT_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '15m',
-    }
+    'accessToken',
+    '15m'
   );
+
   // return user & tokens
 
   return {
@@ -119,16 +110,24 @@ export const login = async ({ email, password, userAgent }) => {
   });
 
   // sign access token & refresh token
-  const refreshToken = jwt.sign({ sessionId: session.id }, JWT_REFRESH_SECRET, {
-    audience: ['user'],
-    expiresIn: '30d',
-  });
+
+  const refreshToken = signToken(
+    {
+      sessionId: session.id,
+    },
+    'refreshToken',
+    '30d'
+  );
 
   const userId = user.id;
-  const accessToken = jwt.sign({ sessionId: session.id, userId }, JWT_SECRET, {
-    audience: ['user'],
-    expiresIn: '15m',
-  });
+  const accessToken = signToken(
+    {
+      sessionId: session.id,
+      userId,
+    },
+    'accessToken',
+    '15m'
+  );
 
   return {
     user: {
@@ -156,27 +155,21 @@ export const refreshUserAccessToken = async (refreshToken) => {
     throw new CustomError('Session expired', 401);
   }
 
-  const newRefreshToken = jwt.sign(
+  const newRefreshToken = signToken(
     {
       sessionId: session.id,
     },
-    JWT_REFRESH_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '30d',
-    }
+    'refreshToken',
+    '30d'
   );
 
-  const accessToken = jwt.sign(
+  const accessToken = signToken(
     {
       userId: session.userId,
       sessionId: session.id,
     },
-    JWT_SECRET,
-    {
-      audience: ['user'],
-      expiresIn: '15m',
-    }
+    'accessToken',
+    '15m'
   );
 
   return {
