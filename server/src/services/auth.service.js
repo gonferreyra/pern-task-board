@@ -144,7 +144,7 @@ export const login = async ({ email, password, userAgent }) => {
 
 export const refreshUserAccessToken = async (refreshToken) => {
   // verify token
-  const payload = verifyToken(refreshToken);
+  const { payload } = verifyToken(refreshToken, 'refreshToken');
 
   if (!payload) {
     throw new CustomError('Invalid refresh token', 401);

@@ -1,13 +1,24 @@
 import jwt from 'jsonwebtoken';
-import { JWT_REFRESH_SECRET } from '../constants/env.js';
+import { JWT_SECRET, JWT_REFRESH_SECRET } from '../constants/env.js';
 
-export const verifyToken = (token) => {
+const tokenSecrets = {
+  accessToken: JWT_SECRET,
+  refreshToken: JWT_REFRESH_SECRET,
+};
+
+export const verifyToken = (token, tokenType) => {
   try {
-    const payload = jwt.verify(token, JWT_REFRESH_SECRET, {
+    const secret = tokenSecrets[tokenType];
+    if (!secret) {
+      throw new Error(`Invalid token type ${tokenType}`);
+    }
+    const payload = jwt.verify(token, secret, {
       audience: ['user'],
     });
-    return payload;
+    return { payload };
   } catch (error) {
-    throw new Error(error.message);
+    return {
+      error: error.message,
+    };
   }
 };
