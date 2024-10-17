@@ -9,7 +9,7 @@ const authenticate = (req, res, next) => {
 
   const { payload, error } = verifyToken(accessToken, 'accessToken');
 
-  console.log('payload: ', payload, 'error: ', error);
+  // console.log('payload: ', payload, 'error: ', error);
   if (!payload) {
     throw new CustomError(
       error === 'jwt expired' ? 'Expired token' : 'Invalid token',
