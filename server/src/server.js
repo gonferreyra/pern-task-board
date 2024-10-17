@@ -9,6 +9,7 @@ import errorHandlerMiddleware from './middlewares/error-handler.js';
 import dbConnection from './config/db.js';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
+import authenticate from './middlewares/authenticate.js';
 
 const app = express();
 
@@ -38,8 +39,8 @@ const Main = async () => {
   // Authentication routes
   app.use('/auth', authRoutes);
 
-  // Routes
-  app.use('/user', userRoutes);
+  // Protected routes
+  app.use('/user', authenticate, userRoutes);
 
   // Error Middleware (always at the end)
   app.use(errorHandlerMiddleware);
