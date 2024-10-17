@@ -1,7 +1,9 @@
 import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
+import SessionModel from './session.model.js';
+import VerificationCodeModel from './verificationCode.model.js';
 
-const User = sequelize.define(
+const UserModel = sequelize.define(
   'User',
   {
     email: {
@@ -15,7 +17,6 @@ const User = sequelize.define(
     },
     verified: {
       type: DataTypes.BOOLEAN,
-      allowNull: false,
       defaultValue: false,
     },
     createdAt: {
@@ -34,4 +35,16 @@ const User = sequelize.define(
   }
 );
 
-export default User;
+// relations User => Sessions
+UserModel.hasMany(SessionModel, { foreignKey: 'userId' });
+SessionModel.belongsTo(UserModel, { foreignKey: 'userId' });
+
+// relations User => VerificationCode
+UserModel.hasMany(VerificationCodeModel, {
+  foreignKey: 'userId',
+});
+VerificationCodeModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+});
+
+export default UserModel;
