@@ -223,7 +223,7 @@ export const verifyEmail = async (code) => {
 
   // return user
   return {
-    user,
+    updatedUser,
   };
 };
 
