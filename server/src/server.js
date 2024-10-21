@@ -4,7 +4,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { loggerMiddleware } from './middlewares/logger-handler.js';
 import logger from './config/logger.js';
-import { SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
+import { APP_ORIGIN, SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
 import errorHandlerMiddleware from './middlewares/error-handler.js';
 import dbConnection from './config/db.js';
 import userRoutes from './routes/user.route.js';
@@ -23,7 +23,7 @@ const Main = async () => {
   app.use(cookieParser()); // parse cookies - req.cookies available
   app.use(
     cors({
-      origin: '*',
+      origin: APP_ORIGIN,
       credentials: true,
     })
   );
