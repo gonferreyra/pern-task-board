@@ -23,3 +23,8 @@ export const verifyEmail = async (verificationCode: string | undefined) => {
   const response = API.get(`/auth/email/verify/${verificationCode}`);
   return response;
 };
+
+export const sendPasswordResetEmail = async (email: string) => {
+  const response = API.post('/auth/password/forgot', { email });
+  return response;
+};

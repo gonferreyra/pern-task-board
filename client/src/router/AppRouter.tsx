@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import VerifyEmailPage from '../pages/VerifyEmailPage';
-import ForgotPassword from '../pages/ForgotPassword';
+import ForgotPassword from '../pages/ForgotPasswordPage';
 
 const router = createBrowserRouter([
   {
