@@ -9,6 +9,11 @@ type RegisterParams = LoginParams & {
   confirmPassword: string;
 };
 
+type resetPasswordParams = {
+  password: string;
+  verificationCode: string;
+};
+
 export const login = async (data: LoginParams) => {
   const response = API.post('/auth/login', data);
   return response;
@@ -26,5 +31,16 @@ export const verifyEmail = async (verificationCode: string | undefined) => {
 
 export const sendPasswordResetEmail = async (email: string) => {
   const response = API.post('/auth/password/forgot', { email });
+  return response;
+};
+
+export const resetPassword = async ({
+  password,
+  verificationCode,
+}: resetPasswordParams) => {
+  const response = API.post('/auth/password/reset', {
+    password,
+    verificationCode,
+  });
   return response;
 };

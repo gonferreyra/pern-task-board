@@ -3,6 +3,7 @@ import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import VerifyEmailPage from '../pages/VerifyEmailPage';
 import ForgotPassword from '../pages/ForgotPasswordPage';
+import ResetPassword from '../pages/ResetPassword';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: '/password/forgot',
     element: <ForgotPassword />,
+  },
+  {
+    path: '/password/reset',
+    element: <ResetPassword />,
   },
 ]);
 
