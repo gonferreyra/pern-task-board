@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from '../pages/LoginPage';
 import RegisterPage from '../pages/RegisterPage';
 import VerifyEmailPage from '../pages/VerifyEmailPage';
+import ForgotPassword from '../pages/ForgotPassword';
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: '/email/verify/:code',
     element: <VerifyEmailPage />,
+  },
+  {
+    path: '/password/forgot',
+    element: <ForgotPassword />,
   },
 ]);
 
