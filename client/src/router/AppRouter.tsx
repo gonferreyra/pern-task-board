@@ -4,11 +4,12 @@ import RegisterPage from '../pages/RegisterPage';
 import VerifyEmailPage from '../pages/VerifyEmailPage';
 import ForgotPassword from '../pages/ForgotPasswordPage';
 import ResetPassword from '../pages/ResetPassword';
+import AppContainer from '../components/AppContainer';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <div>App</div>,
+    element: <AppContainer />,
   },
   {
     path: '/login',
