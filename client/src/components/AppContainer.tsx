@@ -4,8 +4,9 @@ import clsx from 'clsx';
 import FormIcons from './FormIcons';
 import { Icon } from '../lib/types';
 import StatusButton from '../ui/StatusButton';
+import EditTask from './EditTask';
 
-const tasks = [
+export const tasks = [
   {
     id: 1,
     name: 'Task in Progress',
@@ -33,35 +34,35 @@ const tasks = [
   },
 ];
 
-const buttons = [
-  { value: 'in-progress', text: 'In Progress' },
-  { value: 'completed', text: 'Completed' },
-  { value: 'wont-do', text: 'Won"t Do' },
-];
-
 function AppContainer() {
-  const [newTaskModal, setNewTaskModal] = useState(true);
-  const [selectedIcon, setSelectedIcon] = useState<Icon | null>(null);
-  const [selectedButtons, setSelectedButtons] = useState<number[]>([]);
+  const [taskModal, setTaskModal] = useState(false);
+  // const [selectedIcon, setSelectedIcon] = useState<Icon | null>(null);
+  // const [selectedButtons, setSelectedButtons] = useState<number[]>([]);
+  const [edit, setEdit] = useState<number>();
 
-  const handleSelectIcon = (icon: Icon) => {
-    setSelectedIcon(icon);
-    console.log('Selected:', icon); // Send to DB
-  };
+  // const handleSelectIcon = (icon: Icon) => {
+  //   setSelectedIcon(icon);
+  //   console.log('Selected:', icon); // Send to DB
+  // };
 
-  const handleButtonSelection = (index: number) => {
-    if (selectedButtons.includes(index)) {
-      setSelectedButtons([]);
-    } else {
-      setSelectedButtons([index]);
-    }
+  // const handleButtonSelection = (index: number) => {
+  //   if (selectedButtons.includes(index)) {
+  //     setSelectedButtons([]);
+  //   } else {
+  //     setSelectedButtons([index]);
+  //   }
+  // };
+
+  const handleEdit = (id: number) => {
+    console.log('Edita task', id);
+    setEdit(id);
   };
 
   return (
     <>
       <div
         className={clsx('my-12 px-4 sm:p-8', {
-          'opacity-50': newTaskModal,
+          'opacity-50': taskModal,
         })}
       >
         <header>
@@ -85,6 +86,7 @@ function AppContainer() {
               status={
                 task.status as 'completed' | 'in-progress' | 'wont-do' | 'to-do'
               }
+              onEdit={handleEdit}
             />
           ))}
 
@@ -102,59 +104,7 @@ function AppContainer() {
         </main>
       </div>
 
-      {newTaskModal && (
-        <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
-          <div className="w-full rounded-xl bg-white p-4 shadow-lg">
-            <div className="flex justify-between">
-              <h3 className="text-lg">Task details</h3>
-              <button>x</button>
-            </div>
-            <form className="mt-6">
-              <label htmlFor="name" className="text-sm text-custom-dark-grey">
-                Task name
-              </label>
-              <input
-                type="text"
-                name="name"
-                className="w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
-              />
-
-              <label
-                htmlFor="description"
-                className="text-sm text-custom-dark-grey"
-              >
-                Description
-              </label>
-              <textarea
-                name="description"
-                placeholder="Enter a short description"
-                className="h-32 w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
-              />
-              <div>
-                <FormIcons
-                  selectedIcon={selectedIcon}
-                  handleSelectedIcon={handleSelectIcon}
-                />
-              </div>
-              <div>
-                <p className="text-sm text-custom-dark-grey">Status</p>
-                <div className="grid grid-cols-1 grid-rows-3 gap-2 sm:grid-cols-2 sm:grid-rows-2">
-                  {buttons.map((button, index) => (
-                    <StatusButton
-                      key={index}
-                      value={button.value}
-                      index={index}
-                      isSelected={selectedButtons?.includes(index)}
-                      onSelect={handleButtonSelection}
-                      text={button.text}
-                    />
-                  ))}
-                </div>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      {edit && <EditTask id={edit} />}
     </>
   );
 }

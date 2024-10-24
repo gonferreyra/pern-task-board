@@ -2,13 +2,15 @@ import clsx from 'clsx';
 import { getImageUrl } from '../lib/utils';
 
 type TaskProps = {
+  id: number; // change to string to use DB
   name: string;
   description?: string;
   icon: string;
   status: 'completed' | 'in-progress' | 'wont-do' | 'to-do';
+  onEdit: (id: number) => void;
 };
 
-function Task({ name, description, icon, status }: TaskProps) {
+function Task({ id, name, description, icon, status, onEdit }: TaskProps) {
   return (
     <div
       className={clsx('flex gap-5 rounded-xl px-4 py-4', {
@@ -17,6 +19,7 @@ function Task({ name, description, icon, status }: TaskProps) {
         'bg-[#A0ECB1]': status === 'completed',
         'bg-[#E3E8EF]': status === 'to-do',
       })}
+      onClick={() => onEdit(id)}
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F8FAFC]">
         {icon === 'clock' && '⏰'}
