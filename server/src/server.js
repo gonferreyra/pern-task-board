@@ -11,6 +11,7 @@ import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import authenticate from './middlewares/authenticate.js';
 import sessionRoutes from './routes/session.route.js';
+import taskRoutes from './routes/task.route.js';
 
 const app = express();
 
@@ -43,6 +44,9 @@ const Main = async () => {
   // Protected routes
   app.use('/user', authenticate, userRoutes);
   app.use('/sessions', authenticate, sessionRoutes);
+
+  // add authentication middelware after testing with front
+  app.use('/task', taskRoutes);
 
   // Error Middleware (always at the end)
   app.use(errorHandlerMiddleware);
