@@ -13,10 +13,11 @@ const createTaskSchema = z.object({
 export const createTaskHandler = async (req, res, next) => {
   try {
     // validate request
+    const userId = req.userId;
     const request = createTaskSchema.parse(req.body);
 
     // call service
-    await services.createTask(request);
+    await services.createTask(request, userId);
 
     // response
     res.status(201).json({ message: 'Task created successfully' });
