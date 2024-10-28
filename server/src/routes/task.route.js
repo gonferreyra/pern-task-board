@@ -8,5 +8,6 @@ const taskRoutes = Router();
 taskRoutes.post('/', authenticate, controllers.createTaskHandler);
 taskRoutes.get('/', authenticate, controllers.getUserTasksHandler);
 taskRoutes.put('/:id', controllers.updateTaskHandler);
+taskRoutes.delete('/:id', controllers.deleteTaskHandler);
 
 export default taskRoutes;
