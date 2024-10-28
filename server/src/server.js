@@ -46,7 +46,7 @@ const Main = async () => {
   app.use('/sessions', authenticate, sessionRoutes);
 
   // add authentication middelware after testing with front
-  app.use('/task', taskRoutes);
+  app.use('/task', authenticate, taskRoutes);
 
   // Error Middleware (always at the end)
   app.use(errorHandlerMiddleware);
