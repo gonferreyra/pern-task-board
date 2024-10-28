@@ -48,7 +48,7 @@ export const getUserTasksHandler = async (req, res, next) => {
 export const updateTaskHandler = async (req, res, next) => {
   try {
     // validate request
-    const taskId = req.params.id;
+    const taskId = z.string().parse(req.params.id);
     const request = updateTaskSchema.parse(req.body);
 
     // call service
