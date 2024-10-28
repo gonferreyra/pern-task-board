@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import { sequelize } from '../config/db.js';
 import SessionModel from './session.model.js';
 import VerificationCodeModel from './verificationCode.model.js';
+import TaskModel from './task.model.js';
 
 const UserModel = sequelize.define(
   'User',
@@ -44,6 +45,14 @@ UserModel.hasMany(VerificationCodeModel, {
   foreignKey: 'userId',
 });
 VerificationCodeModel.belongsTo(UserModel, {
+  foreignKey: 'userId',
+});
+
+// relations User => Task
+UserModel.hasMany(TaskModel, {
+  foreignKey: 'userId',
+});
+TaskModel.belongsTo(UserModel, {
   foreignKey: 'userId',
 });
 
