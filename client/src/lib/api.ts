@@ -44,3 +44,8 @@ export const resetPassword = async ({
   });
   return response;
 };
+
+export const getUser = async () => {
+  const response = API.get('/user');
+  return response;
+};
