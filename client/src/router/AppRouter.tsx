@@ -5,11 +5,23 @@ import VerifyEmailPage from '../pages/VerifyEmailPage';
 import ForgotPassword from '../pages/ForgotPasswordPage';
 import ResetPassword from '../pages/ResetPassword';
 import AppContainer from '../components/AppContainer';
+import UserPage from '../pages/UserPage';
+import UserSettings from '../pages/UserSettings';
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <AppContainer />,
+    children: [
+      {
+        path: '/',
+        element: <UserPage />,
+      },
+      {
+        path: '/settings',
+        element: <UserSettings />,
+      },
+    ],
   },
   {
     path: '/login',
