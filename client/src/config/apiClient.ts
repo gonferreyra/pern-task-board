@@ -6,18 +6,14 @@ const API = axios.create({
 });
 
 API.interceptors.response.use(
-  // (response) => response, // lo dejo para ver todo lo que trae la peticion
-  (response) => response.data,
+  (response) => response,
   (error) => {
-    // if (error.response) {
     const { status, data } = error.response;
     return Promise.reject({
       status,
       message: data.error,
     });
   },
-  // return Promise.reject({ message: 'Error de red o del servidor' });
-  // },
 );
 
 export default API;
