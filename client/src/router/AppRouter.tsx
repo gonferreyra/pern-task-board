@@ -14,6 +14,7 @@ const router = createBrowserRouter([
     element: <AppContainer />,
     children: [
       {
+        index: true,
         path: '/',
         element: <UserPage />,
       },
