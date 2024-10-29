@@ -7,11 +7,17 @@ import ResetPassword from '../pages/ResetPassword';
 import AppContainer from '../components/AppContainer';
 import UserPage from '../pages/UserPage';
 import UserSettings from '../pages/UserSettings';
+import NavigateSetter from '../components/NavigateSetter';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <AppContainer />,
+    element: (
+      <>
+        <AppContainer />
+        <NavigateSetter />
+      </>
+    ),
     children: [
       {
         index: true,
