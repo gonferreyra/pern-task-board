@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import Task from '../components/Task';
 import EditTask from '../components/EditTask';
+import { Link } from 'react-router-dom';
 
 export const tasks = [
   {
@@ -96,6 +97,34 @@ function UserPage() {
             </div>
           </div>
         </main>
+        <div className="fixed bottom-0 right-0 m-8">
+          <Link
+            to="/settings"
+            className="rounded-full bg-custom-blue px-4 py-2 text-2xl text-white"
+            onMouseOver={() => {
+              const tooltip = document.getElementById('settings-tooltip');
+              if (tooltip) {
+                tooltip.style.opacity = '1';
+                tooltip.style.visibility = 'visible';
+              }
+            }}
+            onMouseOut={() => {
+              const tooltip = document.getElementById('settings-tooltip');
+              if (tooltip) {
+                tooltip.style.opacity = '0';
+                tooltip.style.visibility = 'hidden';
+              }
+            }}
+          >
+            +
+          </Link>
+          <span
+            id="settings-tooltip"
+            className="absolute left-1/2 top-[-50px] -translate-x-1/2 transform rounded-lg bg-gray-500 p-2 text-white opacity-0 transition duration-300"
+          >
+            Settings
+          </span>
+        </div>
       </div>
 
       {taskModal && <EditTask id={edit} handleCloseModal={handleCloseModal} />}
