@@ -3,3 +3,10 @@ export type Icon = {
   emoji: string;
   value: string;
 };
+
+export type Session = {
+  id: number;
+  userAgent: string;
+  createdAt: Date;
+  isCurrentSession: boolean;
+};
