@@ -17,7 +17,6 @@ API.interceptors.response.use(
   async (error) => {
     const { config, response } = error;
     const { status, data } = response || {};
-    // console.log(data);
 
     // try to refresh access token behind the scene
     if (status === 401 && data?.errorCode === 'InvalidAccessToken') {
