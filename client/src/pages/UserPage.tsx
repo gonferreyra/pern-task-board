@@ -69,9 +69,12 @@ function UserPage() {
   return (
     <>
       <div
-        className={clsx('my-12 px-4 sm:p-8', {
-          'opacity-50': taskModal,
-        })}
+        className={clsx(
+          'my-12 px-4 sm:p-8 md:mx-auto md:max-w-lg lg:max-w-3xl',
+          {
+            'opacity-50': taskModal,
+          },
+        )}
       >
         <header>
           <div className="flex gap-4">

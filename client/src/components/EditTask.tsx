@@ -31,8 +31,6 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   });
   const { register, setValue } = methods;
 
-  // console.log(data);
-
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [selectedButtons, setSelectedButtons] = useState<string | null>(null);
 
@@ -79,18 +77,13 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   useEffect(() => {
     if (!newTask) {
       setSelectedIcon(data.icon);
-    }
-  }, []);
-
-  useEffect(() => {
-    if (!newTask) {
       setSelectedButtons(data.status);
     }
   }, []);
 
   return (
     <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
-      <div className="flex min-h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg">
+      <div className="flex min-h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg md:mx-auto md:max-w-lg lg:max-w-3xl">
         <div className="flex justify-between">
           <h3 className="text-lg">Task details</h3>
           <button type="button" onClick={handleCloseModal}>
@@ -98,7 +91,10 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
           </button>
         </div>
         <FormProvider {...methods}>
-          <form className="mt-6" onSubmit={methods.handleSubmit(onSubmit)}>
+          <form
+            className="mt-6 flex flex-col gap-2"
+            onSubmit={methods.handleSubmit(onSubmit)}
+          >
             <label htmlFor="name" className="text-sm text-custom-dark-grey">
               Task name
             </label>
@@ -142,7 +138,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
                 ))}
               </div>
             </div>
-            <div className="mt-8 flex justify-end gap-4">
+            <div className="mt-16 flex justify-end gap-4">
               <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
                 Delete
                 <img src="/Trash.svg" />
