@@ -47,7 +47,7 @@ function UserPage() {
     queryFn: getUserTasks,
   });
 
-  console.log(status);
+  // console.log(status);
 
   const handleEdit = (id: number) => {
     setTaskModal(true);

@@ -61,3 +61,13 @@ export const deleteSession = async (id: number) => {
   const response = API.delete(`/sessions/${id}`);
   return response;
 };
+
+export const getUserTasks = async () => {
+  const response = await API.get('/task');
+  return response.data;
+};
+
+export const updateTask = async ({ id, data }: { id: number; data: any }) => {
+  const response = await API.put(`/task/${id}`, data);
+  return response.data;
+};

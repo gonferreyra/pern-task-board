@@ -1,3 +1,4 @@
+import { useFormContext } from 'react-hook-form';
 import { getImageUrl } from '../lib/utils';
 import clsx from 'clsx';
 
@@ -6,6 +7,7 @@ type StatusButtonProps = {
   isSelected: boolean;
   onSelect: (value: string) => void;
   text: string;
+  selectedButtons: string | null;
 };
 
 function StatusButton({
@@ -13,7 +15,10 @@ function StatusButton({
   isSelected,
   onSelect,
   text,
+  selectedButtons,
 }: StatusButtonProps) {
+  const { register, setValue } = useFormContext();
+
   const handleClick = () => {
     onSelect(value);
   };
@@ -22,6 +27,8 @@ function StatusButton({
     <button
       type="button"
       value={value}
+      {...register('status')}
+      onChange={() => setValue('status', selectedButtons)}
       className={clsx(
         'flex items-center gap-2 rounded-2xl border-2 p-[2px] transition',
         {

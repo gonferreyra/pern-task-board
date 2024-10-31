@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import StatusButton from '../ui/StatusButton';
 import FormIcons from './FormIcons';
+import { FormProvider, useForm } from 'react-hook-form';
+import { useMutation } from '@tanstack/react-query';
+import { updateTask } from '../lib/api';
+import queryClient from '../config/queryClient';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -15,17 +19,47 @@ type EditTaskProps = {
 };
 
 function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
+  const methods = useForm({
+    values: {
+      name: data.name,
+      description: data.description,
+      icon: data.icon,
+      status: data.status,
+    },
+  });
+  const { register, setValue } = methods;
+
+  // console.log(data);
+
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [selectedButtons, setSelectedButtons] = useState<string | null>(null);
-  console.log(selectedButtons);
+
+  const {
+    mutate: updateTaskMutation,
+    // isError,
+    // isSuccess,
+  } = useMutation({
+    mutationFn: updateTask,
+    onSuccess: () => {
+      // invalidate query to update tasks cache
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      handleCloseModal();
+    },
+  });
 
   const handleButtonSelection = (value: string) => {
     setSelectedButtons(value);
+    setValue('status', value);
   };
 
   const handleSelectIcon = (value: string) => {
     setSelectedIcon(value);
-    console.log('Selected:', value); // Send to DB
+  };
+
+  const onSubmit = () => {
+    console.log(methods.getValues());
+
+    updateTaskMutation({ id: data.id, data: methods.getValues() });
   };
 
   useEffect(() => {
@@ -49,60 +83,68 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
             x
           </button>
         </div>
-        <form className="mt-6">
-          <label htmlFor="name" className="text-sm text-custom-dark-grey">
-            Task name
-          </label>
-          <input
-            type="text"
-            name="name"
-            value={newTask ? '' : data.name}
-            className="w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
-          />
-
-          <label
-            htmlFor="description"
-            className="text-sm text-custom-dark-grey"
-          >
-            Description
-          </label>
-          <textarea
-            name="description"
-            placeholder="Enter a short description"
-            value={newTask ? '' : data.description}
-            className="h-32 w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
-          />
-          <div>
-            <FormIcons
-              selectedIcon={selectedIcon}
-              handleSelectedIcon={handleSelectIcon}
+        <FormProvider {...methods}>
+          <form className="mt-6" onSubmit={methods.handleSubmit(onSubmit)}>
+            <label htmlFor="name" className="text-sm text-custom-dark-grey">
+              Task name
+            </label>
+            <input
+              {...register('name')}
+              type="text"
+              // name="name"
+              defaultValue={data?.name}
+              onChange={(e) => setValue('name', e.target.value)}
+              className="w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
             />
-          </div>
-          <div>
-            <p className="text-sm text-custom-dark-grey">Status</p>
-            <div className="grid grid-cols-1 grid-rows-3 gap-2 sm:grid-cols-2 sm:grid-rows-2">
-              {buttons.map((button, index) => (
-                <StatusButton
-                  key={index}
-                  value={button.value}
-                  isSelected={selectedButtons === button.value}
-                  onSelect={handleButtonSelection}
-                  text={button.text}
-                />
-              ))}
+
+            <label
+              htmlFor="description"
+              className="text-sm text-custom-dark-grey"
+            >
+              Description
+            </label>
+            <textarea
+              {...register('description')}
+              // name="description"
+              placeholder="Enter a short description"
+              defaultValue={data?.description}
+              onChange={(e) => setValue('description', e.target.value)}
+              // value={newTask ? '' : data.description}
+              className="h-32 w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
+            />
+            <div>
+              <FormIcons
+                selectedIcon={selectedIcon}
+                handleSelectedIcon={handleSelectIcon}
+              />
             </div>
-          </div>
-        </form>
-        <div className="mt-auto flex justify-end gap-4">
-          <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
-            Delete
-            <img src="/Trash.svg" />
-          </button>
-          <button className="flex items-center gap-2 rounded-full bg-custom-blue px-4 py-2 text-custom-bg-white">
-            Save
-            <img src="/Done_round.svg" />
-          </button>
-        </div>
+            <div>
+              <p className="text-sm text-custom-dark-grey">Status</p>
+              <div className="grid grid-cols-1 grid-rows-3 gap-2 sm:grid-cols-2 sm:grid-rows-2">
+                {buttons.map((button, index) => (
+                  <StatusButton
+                    key={index}
+                    value={button.value}
+                    isSelected={selectedButtons === button.value}
+                    selectedButtons={selectedButtons}
+                    onSelect={handleButtonSelection}
+                    text={button.text}
+                  />
+                ))}
+              </div>
+            </div>
+            <div className="mt-auto flex justify-end gap-4">
+              <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
+                Delete
+                <img src="/Trash.svg" />
+              </button>
+              <button className="flex items-center gap-2 rounded-full bg-custom-blue px-4 py-2 text-custom-bg-white">
+                Save
+                <img src="/Done_round.svg" />
+              </button>
+            </div>
+          </form>
+        </FormProvider>
       </div>
     </div>
   );

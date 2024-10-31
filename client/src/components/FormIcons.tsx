@@ -1,17 +1,21 @@
+import { useFormContext } from 'react-hook-form';
+
 type FormIconsProps = {
   selectedIcon: string | null;
   handleSelectedIcon: (value: string) => void;
 };
 
+const icons = [
+  { emoji: '👨‍💻', value: 'coding' },
+  { emoji: '💬', value: 'chat' },
+  { emoji: '☕', value: 'coffee' },
+  { emoji: '🏋️', value: 'workout' },
+  { emoji: '📚', value: 'study' },
+  { emoji: '⏰', value: 'alarm' },
+];
+
 function FormIcons({ selectedIcon, handleSelectedIcon }: FormIconsProps) {
-  const icons = [
-    { emoji: '👨‍💻', value: 'coding' },
-    { emoji: '💬', value: 'chat' },
-    { emoji: '☕', value: 'coffee' },
-    { emoji: '🏋️', value: 'workout' },
-    { emoji: '📚', value: 'study' },
-    { emoji: '⏰', value: 'alarm' },
-  ];
+  const { register, setValue } = useFormContext();
 
   return (
     <>
@@ -21,7 +25,12 @@ function FormIcons({ selectedIcon, handleSelectedIcon }: FormIconsProps) {
           <button
             type="button"
             key={icon.value}
-            onClick={() => handleSelectedIcon(icon.value)}
+            value={icon.value}
+            onClick={() => {
+              handleSelectedIcon(icon.value);
+              setValue('icon', icon.value);
+            }}
+            {...register('icon')}
             className={`flex h-6 w-6 items-center justify-center rounded-lg p-5 transition ${selectedIcon === icon.value ? 'bg-custom-light-orange' : 'bg-gray-100'}`}
           >
             {icon.emoji}
