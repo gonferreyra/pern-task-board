@@ -11,6 +11,7 @@ const TaskModel = sequelize.define(
     description: {
       type: DataTypes.STRING,
       allowNull: true,
+      defaultValue: '',
     },
     icon: {
       type: DataTypes.STRING,
