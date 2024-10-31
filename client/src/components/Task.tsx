@@ -22,10 +22,10 @@ function Task({ id, name, description, icon, status, onEdit }: TaskProps) {
       onClick={() => onEdit(id)}
     >
       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F8FAFC]">
-        {icon === 'clock' && '⏰'}
-        {icon === 'weight' && '🏋️'}
+        {icon === 'alarm' && '⏰'}
+        {icon === 'workout' && '🏋️'}
         {icon === 'coffee' && '☕️'}
-        {icon === 'books' && '📚'}
+        {icon === 'study' && '📚'}
         {icon === 'coding' && '👨‍💻'}
         {icon === 'chat' && '💬'}
       </div>
