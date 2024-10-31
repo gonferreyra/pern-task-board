@@ -3,28 +3,27 @@ import clsx from 'clsx';
 
 type StatusButtonProps = {
   value: string;
-  index: number;
   isSelected: boolean;
-  onSelect: (index: number) => void;
+  onSelect: (value: string) => void;
   text: string;
 };
 
 function StatusButton({
   value,
-  index,
   isSelected,
   onSelect,
   text,
 }: StatusButtonProps) {
   const handleClick = () => {
-    onSelect(index);
+    onSelect(value);
   };
+
   return (
     <button
       type="button"
       value={value}
       className={clsx(
-        'flex items-center gap-2 rounded-2xl border-2 border-custom-light-grey p-[2px] transition',
+        'flex items-center gap-2 rounded-2xl border-2 p-[2px] transition',
         {
           'border-custom-blue': isSelected,
         },

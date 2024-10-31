@@ -3,6 +3,9 @@ import { useState } from 'react';
 import Task from '../components/Task';
 import EditTask from '../components/EditTask';
 import { Link } from 'react-router-dom';
+import { getUserTasks } from '../lib/api';
+import { useQuery } from '@tanstack/react-query';
+import { Task as TaskType } from '../lib/types';
 
 export const tasks = [
   {
@@ -34,22 +37,35 @@ export const tasks = [
 
 function UserPage() {
   const [taskModal, setTaskModal] = useState(false);
+  const [newTask, setNewTask] = useState(false);
+  const [editTask, setEditTask] = useState<any>(null);
+  const [status, setStatus] = useState<string>('');
 
-  const [edit, setEdit] = useState<number>();
+  // get tasks from server
+  const { data, isPending } = useQuery({
+    queryKey: ['tasks'],
+    queryFn: getUserTasks,
+  });
+
+  console.log(status);
 
   const handleEdit = (id: number) => {
     setTaskModal(true);
-    setEdit(id);
-    console.log('Edit task', id);
+    // set task to edit
+    const task = data.tasks.find((task: TaskType) => task.id === id);
+    setEditTask(task);
+    setStatus(data.tasks.find((task: TaskType) => task.id === id).status);
   };
 
-  const handleNewTask = () => {
-    setTaskModal(true);
-  };
+  // const handleNewTask = () => {
+  //   setTaskModal(true);
+  //   setNewTask(true);
+  // };
 
   const handleCloseModal = () => {
     setTaskModal(false);
   };
+
   return (
     <>
       <div
@@ -71,7 +87,9 @@ function UserPage() {
         </header>
         {/* If is logged in, show tasks, if not show link to login or register */}
         <main className="my-12 flex flex-col gap-4">
-          {tasks.map((task) => (
+          {/* {isPending && <div>Loading...</div>} */}
+
+          {data?.tasks?.map((task: TaskType) => (
             <Task
               key={task.id}
               {...task}
@@ -82,10 +100,21 @@ function UserPage() {
             />
           ))}
 
+          {/* {tasks.map((task) => (
+            <Task
+              key={task.id}
+              {...task}
+              status={
+                task.status as 'completed' | 'in-progress' | 'wont-do' | 'to-do'
+              }
+              onEdit={handleEdit}
+            />
+          ))} */}
+
           {/* ADD task */}
           <div
             className="flex cursor-pointer gap-5 rounded-xl bg-[#F5E8D5] px-4 py-4 transition hover:scale-105"
-            onClick={handleNewTask}
+            // onClick={handleNewTask}
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#E9A23B]">
               <img src="/Add_round_duotone.svg" alt="add-image" />
@@ -127,7 +156,13 @@ function UserPage() {
         </div>
       </div>
 
-      {taskModal && <EditTask id={edit} handleCloseModal={handleCloseModal} />}
+      {taskModal && (
+        <EditTask
+          newTask={newTask}
+          data={editTask}
+          handleCloseModal={handleCloseModal}
+        />
+      )}
     </>
   );
 }

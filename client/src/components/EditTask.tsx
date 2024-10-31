@@ -1,7 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import StatusButton from '../ui/StatusButton';
 import FormIcons from './FormIcons';
-import { Icon } from '../lib/types';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -9,28 +8,46 @@ const buttons = [
   { value: 'wont-do', text: 'Won"t Do' },
 ];
 
-function EditTask({ id }) {
-  const [selectedIcon, setSelectedIcon] = useState<Icon | null>(null);
-  const [selectedButtons, setSelectedButtons] = useState<number[]>([]);
+type EditTaskProps = {
+  data: any;
+  newTask: boolean;
+  handleCloseModal: () => void;
+};
 
-  const handleButtonSelection = (index: number) => {
-    if (selectedButtons.includes(index)) {
-      setSelectedButtons([]);
-    } else {
-      setSelectedButtons([index]);
+function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
+  const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
+  const [selectedButtons, setSelectedButtons] = useState<string | null>(null);
+  console.log(selectedButtons);
+
+  const handleButtonSelection = (value: string) => {
+    setSelectedButtons(value);
+  };
+
+  const handleSelectIcon = (value: string) => {
+    setSelectedIcon(value);
+    console.log('Selected:', value); // Send to DB
+  };
+
+  useEffect(() => {
+    if (!newTask) {
+      setSelectedIcon(data.icon);
     }
-  };
+  }, []);
 
-  const handleSelectIcon = (icon: Icon) => {
-    setSelectedIcon(icon);
-    console.log('Selected:', icon); // Send to DB
-  };
+  useEffect(() => {
+    if (!newTask) {
+      setSelectedButtons(data.status);
+    }
+  }, []);
+
   return (
     <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
-      <div className="w-full rounded-xl bg-white p-4 shadow-lg">
+      <div className="flex h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg">
         <div className="flex justify-between">
           <h3 className="text-lg">Task details</h3>
-          <button>x</button>
+          <button type="button" onClick={handleCloseModal}>
+            x
+          </button>
         </div>
         <form className="mt-6">
           <label htmlFor="name" className="text-sm text-custom-dark-grey">
@@ -39,6 +56,7 @@ function EditTask({ id }) {
           <input
             type="text"
             name="name"
+            value={newTask ? '' : data.name}
             className="w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
           />
 
@@ -51,6 +69,7 @@ function EditTask({ id }) {
           <textarea
             name="description"
             placeholder="Enter a short description"
+            value={newTask ? '' : data.description}
             className="h-32 w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
           />
           <div>
@@ -66,16 +85,24 @@ function EditTask({ id }) {
                 <StatusButton
                   key={index}
                   value={button.value}
-                  index={index}
-                  isSelected={selectedButtons?.includes(index)}
+                  isSelected={selectedButtons === button.value}
                   onSelect={handleButtonSelection}
                   text={button.text}
                 />
               ))}
             </div>
           </div>
-          <div></div>
         </form>
+        <div className="mt-auto flex justify-end gap-4">
+          <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
+            Delete
+            <img src="/Trash.svg" />
+          </button>
+          <button className="flex items-center gap-2 rounded-full bg-custom-blue px-4 py-2 text-custom-bg-white">
+            Save
+            <img src="/Done_round.svg" />
+          </button>
+        </div>
       </div>
     </div>
   );

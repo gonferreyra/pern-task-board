@@ -13,7 +13,7 @@ type TaskProps = {
 function Task({ id, name, description, icon, status, onEdit }: TaskProps) {
   return (
     <div
-      className={clsx('flex gap-5 rounded-xl px-4 py-4', {
+      className={clsx('flex cursor-pointer gap-5 rounded-xl px-4 py-4', {
         'bg-[#f5d565]': status === 'in-progress',
         'bg-[#F7D4D3]': status === 'wont-do',
         'bg-[#A0ECB1]': status === 'completed',
@@ -24,8 +24,10 @@ function Task({ id, name, description, icon, status, onEdit }: TaskProps) {
       <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F8FAFC]">
         {icon === 'clock' && '⏰'}
         {icon === 'weight' && '🏋️'}
-        {icon === 'cofee' && '☕️'}
+        {icon === 'coffee' && '☕️'}
         {icon === 'books' && '📚'}
+        {icon === 'coding' && '👨‍💻'}
+        {icon === 'chat' && '💬'}
       </div>
       <div>
         <h3 className="flex min-h-[45px] items-center text-xl font-semibold">

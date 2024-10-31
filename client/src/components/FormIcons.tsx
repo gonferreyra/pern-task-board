@@ -1,18 +1,16 @@
-import { Icon } from '../lib/types';
-
 type FormIconsProps = {
-  selectedIcon: Icon | null;
-  handleSelectedIcon: (icon: Icon) => void;
+  selectedIcon: string | null;
+  handleSelectedIcon: (value: string) => void;
 };
 
 function FormIcons({ selectedIcon, handleSelectedIcon }: FormIconsProps) {
   const icons = [
-    { id: 1, emoji: '👨‍💻', value: 'coding' },
-    { id: 2, emoji: '💬', value: 'chat' },
-    { id: 3, emoji: '☕', value: 'coffee' },
-    { id: 4, emoji: '🏋️', value: 'workout' },
-    { id: 5, emoji: '📚', value: 'study' },
-    { id: 6, emoji: '⏰', value: 'alarm' },
+    { emoji: '👨‍💻', value: 'coding' },
+    { emoji: '💬', value: 'chat' },
+    { emoji: '☕', value: 'coffee' },
+    { emoji: '🏋️', value: 'workout' },
+    { emoji: '📚', value: 'study' },
+    { emoji: '⏰', value: 'alarm' },
   ];
 
   return (
@@ -22,9 +20,9 @@ function FormIcons({ selectedIcon, handleSelectedIcon }: FormIconsProps) {
         {icons.map((icon) => (
           <button
             type="button"
-            key={icon.id}
-            onClick={() => handleSelectedIcon(icon)}
-            className={`flex h-6 w-6 items-center justify-center rounded-lg p-5 transition ${selectedIcon?.id === icon.id ? 'bg-custom-light-orange' : 'bg-gray-100'}`}
+            key={icon.value}
+            onClick={() => handleSelectedIcon(icon.value)}
+            className={`flex h-6 w-6 items-center justify-center rounded-lg p-5 transition ${selectedIcon === icon.value ? 'bg-custom-light-orange' : 'bg-gray-100'}`}
           >
             {icon.emoji}
           </button>
