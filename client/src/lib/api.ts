@@ -71,3 +71,8 @@ export const updateTask = async ({ id, data }: { id: number; data: any }) => {
   const response = await API.put(`/task/${id}`, data);
   return response.data;
 };
+
+export const createTask = async (data: any) => {
+  const response = await API.post('/task', data);
+  return response.data;
+};

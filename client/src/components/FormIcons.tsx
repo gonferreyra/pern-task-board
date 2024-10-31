@@ -25,7 +25,7 @@ function FormIcons({ selectedIcon, handleSelectedIcon }: FormIconsProps) {
           <button
             type="button"
             key={icon.value}
-            value={icon.value}
+            value={icon ? icon.value : ''}
             onClick={() => {
               handleSelectedIcon(icon.value);
               setValue('icon', icon.value);

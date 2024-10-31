@@ -3,7 +3,7 @@ import StatusButton from '../ui/StatusButton';
 import FormIcons from './FormIcons';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { updateTask } from '../lib/api';
+import { createTask, updateTask } from '../lib/api';
 import queryClient from '../config/queryClient';
 
 const buttons = [
@@ -20,12 +20,14 @@ type EditTaskProps = {
 
 function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   const methods = useForm({
-    values: {
-      name: data.name,
-      description: data.description,
-      icon: data.icon,
-      status: data.status,
-    },
+    defaultValues: newTask
+      ? { name: '', description: '', icon: '' }
+      : {
+          name: data.name,
+          description: data.description,
+          icon: data.icon,
+          status: data.status,
+        },
   });
   const { register, setValue } = methods;
 
@@ -47,6 +49,14 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
     },
   });
 
+  const { mutate: createTaskMutation } = useMutation({
+    mutationFn: createTask,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      handleCloseModal();
+    },
+  });
+
   const handleButtonSelection = (value: string) => {
     setSelectedButtons(value);
     setValue('status', value);
@@ -58,8 +68,12 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
 
   const onSubmit = () => {
     console.log(methods.getValues());
-
-    updateTaskMutation({ id: data.id, data: methods.getValues() });
+    if (newTask) {
+      createTaskMutation(methods.getValues());
+      console.log(methods.getValues());
+    } else {
+      updateTaskMutation({ id: data.id, data: methods.getValues() });
+    }
   };
 
   useEffect(() => {
@@ -76,7 +90,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
 
   return (
     <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
-      <div className="flex h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg">
+      <div className="flex min-h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg">
         <div className="flex justify-between">
           <h3 className="text-lg">Task details</h3>
           <button type="button" onClick={handleCloseModal}>
@@ -91,8 +105,6 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
             <input
               {...register('name')}
               type="text"
-              // name="name"
-              defaultValue={data?.name}
               onChange={(e) => setValue('name', e.target.value)}
               className="w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
             />
@@ -105,11 +117,8 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
             </label>
             <textarea
               {...register('description')}
-              // name="description"
               placeholder="Enter a short description"
-              defaultValue={data?.description}
               onChange={(e) => setValue('description', e.target.value)}
-              // value={newTask ? '' : data.description}
               className="h-32 w-full rounded-xl border-2 border-custom-light-grey px-4 py-2 outline-none hover:border-custom-blue focus:border-custom-blue"
             />
             <div>
@@ -133,7 +142,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
                 ))}
               </div>
             </div>
-            <div className="mt-auto flex justify-end gap-4">
+            <div className="mt-8 flex justify-end gap-4">
               <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
                 Delete
                 <img src="/Trash.svg" />

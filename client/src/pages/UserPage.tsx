@@ -39,10 +39,10 @@ function UserPage() {
   const [taskModal, setTaskModal] = useState(false);
   const [newTask, setNewTask] = useState(false);
   const [editTask, setEditTask] = useState<any>(null);
-  const [status, setStatus] = useState<string>('');
+  // console.log(newTask);
 
   // get tasks from server
-  const { data, isPending } = useQuery({
+  const { data } = useQuery({
     queryKey: ['tasks'],
     queryFn: getUserTasks,
   });
@@ -54,16 +54,16 @@ function UserPage() {
     // set task to edit
     const task = data.tasks.find((task: TaskType) => task.id === id);
     setEditTask(task);
-    setStatus(data.tasks.find((task: TaskType) => task.id === id).status);
   };
 
-  // const handleNewTask = () => {
-  //   setTaskModal(true);
-  //   setNewTask(true);
-  // };
+  const handleNewTask = () => {
+    setTaskModal(true);
+    setNewTask(true);
+  };
 
   const handleCloseModal = () => {
     setTaskModal(false);
+    setNewTask(false);
   };
 
   return (
@@ -114,7 +114,7 @@ function UserPage() {
           {/* ADD task */}
           <div
             className="flex cursor-pointer gap-5 rounded-xl bg-[#F5E8D5] px-4 py-4 transition hover:scale-105"
-            // onClick={handleNewTask}
+            onClick={handleNewTask}
           >
             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#E9A23B]">
               <img src="/Add_round_duotone.svg" alt="add-image" />
