@@ -83,7 +83,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
 
   return (
     <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
-      <div className="flex min-h-[95%] w-full flex-col rounded-xl bg-white p-4 shadow-lg md:mx-auto md:max-w-lg lg:max-w-3xl">
+      <div className="flex max-h-[90vh] w-full flex-col overflow-y-auto rounded-xl bg-white p-4 shadow-lg md:mx-auto md:max-w-lg lg:max-w-3xl">
         <div className="flex justify-between">
           <h3 className="text-lg">Task details</h3>
           <button type="button" onClick={handleCloseModal}>
@@ -138,7 +138,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
                 ))}
               </div>
             </div>
-            <div className="mt-16 flex justify-end gap-4">
+            <div className="mt-6 flex justify-end gap-4">
               <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
                 Delete
                 <img src="/Trash.svg" />

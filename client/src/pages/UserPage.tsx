@@ -52,6 +52,7 @@ function UserPage() {
   const handleEdit = (id: number) => {
     setTaskModal(true);
     // set task to edit
+    document.body.style.overflow = 'hidden';
     const task = data.tasks.find((task: TaskType) => task.id === id);
     setEditTask(task);
   };
@@ -64,6 +65,7 @@ function UserPage() {
   const handleCloseModal = () => {
     setTaskModal(false);
     setNewTask(false);
+    document.body.style.overflow = 'auto';
   };
 
   return (
@@ -72,7 +74,7 @@ function UserPage() {
         className={clsx(
           'my-12 px-4 sm:p-8 md:mx-auto md:max-w-lg lg:max-w-3xl',
           {
-            'opacity-50': taskModal,
+            'opacity-40': taskModal,
           },
         )}
       >
