@@ -29,7 +29,7 @@ function Task({ id, name, description, icon, status, onEdit }: TaskProps) {
         {icon === 'coding' && '👨‍💻'}
         {icon === 'chat' && '💬'}
       </div>
-      <div>
+      <div className="max-w-[280px]">
         <h3 className="flex min-h-[45px] items-center text-xl font-semibold">
           {name}
         </h3>
