@@ -46,7 +46,7 @@ function UserPage() {
   // console.log(settingsMenu);
 
   // get tasks from server
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ['tasks'],
     queryFn: getUserTasks,
   });
@@ -106,6 +106,26 @@ function UserPage() {
         <main className="my-12 flex flex-col gap-4">
           {/* {isPending && <div>Loading...</div>} */}
 
+          {isLoading && (
+            <>
+              <div className="flex animate-pulse gap-5 rounded-xl bg-gray-200 px-4 py-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-300"></div>
+
+                <div className="h-12 w-[100%] flex-1 items-center rounded-xl bg-gray-300"></div>
+              </div>
+              <div className="flex animate-pulse gap-5 rounded-xl bg-gray-200 px-4 py-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-300"></div>
+
+                <div className="h-12 w-[100%] flex-1 items-center rounded-xl bg-gray-300"></div>
+              </div>
+              <div className="flex animate-pulse gap-5 rounded-xl bg-gray-200 px-4 py-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-gray-300"></div>
+
+                <div className="h-12 w-[100%] flex-1 items-center rounded-xl bg-gray-300"></div>
+              </div>
+            </>
+          )}
+
           {data?.tasks?.map((task: TaskType) => (
             <Task
               key={task.id}
@@ -116,17 +136,6 @@ function UserPage() {
               onEdit={handleEdit}
             />
           ))}
-
-          {/* {tasks.map((task) => (
-            <Task
-              key={task.id}
-              {...task}
-              status={
-                task.status as 'completed' | 'in-progress' | 'wont-do' | 'to-do'
-              }
-              onEdit={handleEdit}
-            />
-          ))} */}
 
           {/* ADD task */}
           <div
