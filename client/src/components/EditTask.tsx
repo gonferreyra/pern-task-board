@@ -3,7 +3,7 @@ import StatusButton from '../ui/StatusButton';
 import FormIcons from './FormIcons';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
-import { createTask, updateTask } from '../lib/api';
+import { createTask, deleteTask, updateTask } from '../lib/api';
 import queryClient from '../config/queryClient';
 import toast from 'react-hot-toast';
 
@@ -45,6 +45,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
       // invalidate query to update tasks cache
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       handleCloseModal();
+      toast.success('Task updated successfully');
     },
     onError: (error: any) => {
       const errors = error.response?.data?.errors;
@@ -59,12 +60,25 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       handleCloseModal();
+      toast.success('Task created successfully');
     },
     onError: (error: any) => {
       const errors = error.response?.data?.errors;
       toast.error(
         ` Field: ${errors[0].path.toUpperCase()} : ${errors[0].message}`,
       );
+    },
+  });
+
+  const { mutate: deleteTaskMutation } = useMutation({
+    mutationFn: () => deleteTask(data.id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+      handleCloseModal();
+      toast.success('Task deleted successfully');
+    },
+    onError: () => {
+      toast.error('Failed to delete task');
     },
   });
 
@@ -78,10 +92,10 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   };
 
   const onSubmit = () => {
-    console.log(methods.getValues());
+    // console.log(methods.getValues());
     if (newTask) {
       createTaskMutation(methods.getValues());
-      console.log(methods.getValues());
+      // console.log(methods.getValues());
     } else {
       updateTaskMutation({ id: data.id, data: methods.getValues() });
     }
@@ -152,11 +166,20 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-4">
-              <button className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white">
-                Delete
-                <img src="/Trash.svg" />
-              </button>
-              <button className="flex items-center gap-2 rounded-full bg-custom-blue px-4 py-2 text-custom-bg-white">
+              {!newTask && (
+                <button
+                  type="button"
+                  className="flex items-center gap-2 rounded-full bg-custom-dark-grey px-4 py-2 text-custom-bg-white"
+                  onClick={() => deleteTaskMutation()}
+                >
+                  Delete
+                  <img src="/Trash.svg" />
+                </button>
+              )}
+              <button
+                type="submit"
+                className="flex items-center gap-2 rounded-full bg-custom-blue px-4 py-2 text-custom-bg-white"
+              >
                 Save
                 <img src="/Done_round.svg" />
               </button>

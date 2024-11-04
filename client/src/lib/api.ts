@@ -80,3 +80,8 @@ export const createTask = async (data: any) => {
   const response = await API.post('/task', data);
   return response.data;
 };
+
+export const deleteTask = async (id: number) => {
+  const response = await API.delete(`/task/${id}`);
+  return response.data;
+};
