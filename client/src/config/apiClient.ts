@@ -36,10 +36,11 @@ API.interceptors.response.use(
       }
     }
 
-    return Promise.reject({
-      status,
-      message: data.error,
-    });
+    // return Promise.reject({
+    //   status,
+    //   message: data.error,
+    // });
+    return Promise.reject(error);
   },
 );
 
