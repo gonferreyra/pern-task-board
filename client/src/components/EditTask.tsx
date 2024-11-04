@@ -5,6 +5,7 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import { createTask, updateTask } from '../lib/api';
 import queryClient from '../config/queryClient';
+import toast from 'react-hot-toast';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -45,6 +46,12 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       handleCloseModal();
     },
+    onError: (error: any) => {
+      const errors = error.response?.data?.errors;
+      toast.error(
+        ` Field: ${errors[0].path.toUpperCase()} : ${errors[0].message}`,
+      );
+    },
   });
 
   const { mutate: createTaskMutation } = useMutation({
@@ -52,6 +59,12 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       handleCloseModal();
+    },
+    onError: (error: any) => {
+      const errors = error.response?.data?.errors;
+      toast.error(
+        ` Field: ${errors[0].path.toUpperCase()} : ${errors[0].message}`,
+      );
     },
   });
 
