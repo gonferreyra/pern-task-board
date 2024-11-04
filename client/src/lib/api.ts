@@ -21,6 +21,10 @@ export const login = async (data: LoginParams) => {
   return response;
 };
 
+export const logout = async () => {
+  return API.get('/auth/logout');
+};
+
 export const register = async (data: RegisterParams) => {
   const response = API.post('/auth/register', data);
   return response;

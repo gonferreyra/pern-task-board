@@ -2,10 +2,11 @@ import clsx from 'clsx';
 import { useState } from 'react';
 import Task from '../components/Task';
 import EditTask from '../components/EditTask';
-import { Link } from 'react-router-dom';
-import { getUserTasks } from '../lib/api';
-import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
+import { getUserTasks, logout } from '../lib/api';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { Task as TaskType } from '../lib/types';
+import queryClient from '../config/queryClient';
 
 export const tasks = [
   {
@@ -36,15 +37,26 @@ export const tasks = [
 ];
 
 function UserPage() {
+  const navigate = useNavigate();
+
   const [taskModal, setTaskModal] = useState(false);
   const [newTask, setNewTask] = useState(false);
   const [editTask, setEditTask] = useState<any>(null);
-  // console.log(newTask);
+  const [settingsMenu, setSettingsMenu] = useState(false);
+  // console.log(settingsMenu);
 
   // get tasks from server
   const { data } = useQuery({
     queryKey: ['tasks'],
     queryFn: getUserTasks,
+  });
+
+  const { mutate: signOut } = useMutation({
+    mutationFn: logout,
+    onSettled: () => {
+      queryClient.clear();
+      navigate('/login', { replace: true });
+    },
   });
 
   // console.log(status);
@@ -132,32 +144,31 @@ function UserPage() {
           </div>
         </main>
         <div className="fixed bottom-0 right-0 m-8">
-          <Link
-            to="/settings"
-            className="rounded-full bg-custom-blue px-4 py-2 text-2xl text-white"
-            onMouseOver={() => {
-              const tooltip = document.getElementById('settings-tooltip');
-              if (tooltip) {
-                tooltip.style.opacity = '1';
-                tooltip.style.visibility = 'visible';
-              }
-            }}
-            onMouseOut={() => {
-              const tooltip = document.getElementById('settings-tooltip');
-              if (tooltip) {
-                tooltip.style.opacity = '0';
-                tooltip.style.visibility = 'hidden';
-              }
-            }}
+          <div
+            className="relative"
+            onMouseEnter={() => setSettingsMenu(true)}
+            onMouseLeave={() => setSettingsMenu(false)}
           >
-            +
-          </Link>
-          <span
-            id="settings-tooltip"
-            className="absolute left-1/2 top-[-50px] -translate-x-1/2 transform rounded-lg bg-gray-500 p-2 text-white opacity-0 transition duration-300"
-          >
-            Settings
-          </span>
+            <button className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+              Settings
+            </button>
+            {settingsMenu && (
+              <div className="absolute -top-20 right-0 mt-2 w-24 overflow-hidden rounded-md border bg-white shadow-lg">
+                <button
+                  onClick={() => navigate('/settings')}
+                  className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                >
+                  Settings
+                </button>
+                <button
+                  onClick={() => signOut()}
+                  className="block w-full px-4 py-2 text-left text-gray-700 hover:bg-gray-100"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
