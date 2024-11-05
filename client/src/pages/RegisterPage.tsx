@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../lib/api';
 import Button from '../ui/Button';
+import toast from 'react-hot-toast';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function RegisterPage() {
   } = useMutation({
     mutationFn: register,
     onSuccess: () => {
+      toast.success('Account created successfully');
       navigate('/', { replace: true });
     },
     onError: (error) => {
