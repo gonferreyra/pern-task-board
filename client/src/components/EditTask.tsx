@@ -6,7 +6,8 @@ import { useMutation } from '@tanstack/react-query';
 import { createTask, deleteTask, updateTask } from '../lib/api';
 import queryClient from '../config/queryClient';
 import toast from 'react-hot-toast';
-import { updateTaskSchema } from '../lib/schemas';
+import { createTaskSchema, updateTaskSchema } from '../lib/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -30,17 +31,19 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
           icon: data.icon,
           status: data.status,
         },
+    resolver: zodResolver(newTask ? createTaskSchema : updateTaskSchema),
   });
-  const { register, setValue } = methods;
+
+  const {
+    register,
+    setValue,
+    formState: { errors },
+  } = methods;
 
   const [selectedIcon, setSelectedIcon] = useState<string | null>(null);
   const [selectedButtons, setSelectedButtons] = useState<string | null>(null);
 
-  const {
-    mutate: updateTaskMutation,
-    // isError,
-    // isSuccess,
-  } = useMutation({
+  const { mutate: updateTaskMutation } = useMutation({
     mutationFn: updateTask,
     onSuccess: () => {
       // invalidate query to update tasks cache
@@ -87,12 +90,10 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   };
 
   const onSubmit = () => {
-    // console.log(methods.getValues());
     if (newTask) {
       createTaskMutation(methods.getValues());
     } else {
-      const parsedData = updateTaskSchema.parse(methods.getValues());
-      updateTaskMutation({ id: data.id, data: parsedData });
+      updateTaskMutation({ id: data.id, data: methods.getValues() });
     }
   };
 
@@ -102,6 +103,17 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
       setSelectedButtons(data.status);
     }
   }, []);
+
+  // Effect to show a toast for client-side validation errors
+  useEffect(() => {
+    if (Object.keys(errors).length > 0) {
+      const errorMessages = Object.values(errors)
+        .map((error) => error.message)
+        .join(', ');
+
+      toast.error(`Error: ${errorMessages}`);
+    }
+  }, [errors]);
 
   return (
     <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
