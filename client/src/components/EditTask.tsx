@@ -6,6 +6,7 @@ import { useMutation } from '@tanstack/react-query';
 import { createTask, deleteTask, updateTask } from '../lib/api';
 import queryClient from '../config/queryClient';
 import toast from 'react-hot-toast';
+import { updateTaskSchema } from '../lib/schemas';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -48,10 +49,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
       toast.success('Task updated successfully');
     },
     onError: (error: any) => {
-      const errors = error.response?.data?.errors;
-      toast.error(
-        ` Field: ${errors[0].path.toUpperCase()} : ${errors[0].message}`,
-      );
+      toast.error(error.message);
     },
   });
 
@@ -63,10 +61,7 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
       toast.success('Task created successfully');
     },
     onError: (error: any) => {
-      const errors = error.response?.data?.errors;
-      toast.error(
-        ` Field: ${errors[0].path.toUpperCase()} : ${errors[0].message}`,
-      );
+      toast.error(error.message);
     },
   });
 
@@ -95,9 +90,9 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
     // console.log(methods.getValues());
     if (newTask) {
       createTaskMutation(methods.getValues());
-      // console.log(methods.getValues());
     } else {
-      updateTaskMutation({ id: data.id, data: methods.getValues() });
+      const parsedData = updateTaskSchema.parse(methods.getValues());
+      updateTaskMutation({ id: data.id, data: parsedData });
     }
   };
 
