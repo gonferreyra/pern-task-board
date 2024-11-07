@@ -4,13 +4,14 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { loggerMiddleware } from './middlewares/logger-handler.js';
 import logger from './config/logger.js';
-import { SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
+import { APP_ORIGIN, SERVER_HOSTNAME, SERVER_PORT } from './constants/env.js';
 import errorHandlerMiddleware from './middlewares/error-handler.js';
 import dbConnection from './config/db.js';
 import userRoutes from './routes/user.route.js';
 import authRoutes from './routes/auth.route.js';
 import authenticate from './middlewares/authenticate.js';
 import sessionRoutes from './routes/session.route.js';
+import taskRoutes from './routes/task.route.js';
 
 const app = express();
 
@@ -23,7 +24,7 @@ const Main = async () => {
   app.use(cookieParser()); // parse cookies - req.cookies available
   app.use(
     cors({
-      origin: '*',
+      origin: APP_ORIGIN,
       credentials: true,
     })
   );
@@ -43,6 +44,9 @@ const Main = async () => {
   // Protected routes
   app.use('/user', authenticate, userRoutes);
   app.use('/sessions', authenticate, sessionRoutes);
+
+  // add authentication middelware after testing with front
+  app.use('/task', authenticate, taskRoutes);
 
   // Error Middleware (always at the end)
   app.use(errorHandlerMiddleware);

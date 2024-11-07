@@ -4,7 +4,12 @@ import { verifyToken } from '../utils/jwt.js';
 const authenticate = (req, res, next) => {
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
-    throw new CustomError('Not authorized', 401);
+    const error = {
+      message: 'Not authorized',
+      statusCode: 401,
+      errorCode: 'InvalidAccessToken',
+    };
+    res.status(401).json(error);
   }
 
   const { payload, error } = verifyToken(accessToken, 'accessToken');
@@ -13,7 +18,8 @@ const authenticate = (req, res, next) => {
   if (!payload) {
     throw new CustomError(
       error === 'jwt expired' ? 'Expired token' : 'Invalid token',
-      401
+      401,
+      'InvalidAccessToken'
     );
   }
 

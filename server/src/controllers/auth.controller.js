@@ -12,13 +12,20 @@ import { fifteenMinutesFromNow, thirtyDaysFromNow } from '../utils/date.js';
 const emailSchema = z.string().email().min(6).max(255);
 const passwordSchema = z.string().min(6).max(20);
 
-const registerSchema = z.object({
+const loginSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   userAgent: z.string().optional(),
 });
 
-const loginSchema = registerSchema.extend();
+const registerSchema = loginSchema
+  .extend({
+    confirmPassword: passwordSchema,
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
 
 const verificationCodeSchema = z.string().min(1).max(36);
 
