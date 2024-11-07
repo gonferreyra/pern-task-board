@@ -115,7 +115,7 @@ function TaskModal() {
   }, [errors]);
 
   return (
-    <div className="fixed left-0 top-0 z-10 h-screen w-screen bg-[#00000033] p-8">
+    <div className="fixed left-0 top-0 z-10 flex h-screen w-screen items-center justify-center bg-[#00000033] p-8">
       <div className="flex max-h-[90vh] w-full flex-col overflow-y-auto rounded-xl bg-white p-4 shadow-lg md:mx-auto md:max-w-lg lg:max-w-3xl">
         <div className="flex justify-between">
           <h3 className="text-lg">Task details</h3>
@@ -125,7 +125,7 @@ function TaskModal() {
         </div>
         <FormProvider {...methods}>
           <form
-            className="mt-6 flex flex-col gap-2"
+            className="mt-2 flex flex-col 2xl:gap-2"
             onSubmit={methods.handleSubmit(onSubmit)}
           >
             <label htmlFor="name" className="text-sm text-custom-dark-grey">
