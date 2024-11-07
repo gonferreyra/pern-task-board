@@ -1,49 +1,25 @@
-import clsx from 'clsx';
-import { useState } from 'react';
-import Task from '../components/Task';
-import EditTask from '../components/EditTask';
-import { useNavigate } from 'react-router-dom';
-import { getUserTasks, logout } from '../lib/api';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { Task as TaskType } from '../lib/types';
+import clsx from 'clsx';
+import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import TaskModal from '../components/TaskModal';
+import Task from '../components/Task';
 import queryClient from '../config/queryClient';
-
-export const tasks = [
-  {
-    id: 1,
-    name: 'Task in Progress',
-    icon: 'clock',
-    status: 'in-progress',
-  },
-  {
-    id: 2,
-    name: 'Task Completed',
-    icon: 'weight',
-    status: 'completed',
-  },
-  {
-    id: 3,
-    name: 'Task Won"t Do',
-    icon: 'cofee',
-    status: 'wont-do',
-  },
-  {
-    id: 4,
-    name: 'Task To Do',
-    description: 'Work on a Challenge on devChallenges.io, learn TypeScript.',
-    icon: 'books',
-    status: 'to-do',
-  },
-];
+import { getUserTasks, logout } from '../lib/api';
+import { Task as TaskType } from '../lib/types';
+import useTaskStore from '../stores/taskStore';
 
 function UserPage() {
   const navigate = useNavigate();
 
-  const [taskModal, setTaskModal] = useState(false);
-  const [newTask, setNewTask] = useState(false);
-  const [editTask, setEditTask] = useState<any>(null);
-  const [settingsMenu, setSettingsMenu] = useState(false);
-  // console.log(settingsMenu);
+  // zustand state
+  const taskModal = useTaskStore((state) => state.taskModal);
+  const settingsMenu = useTaskStore((state) => state.settingsMenu);
+
+  // zustand handlers
+  const handleNewTask = useTaskStore((state) => state.handleNewTask);
+  const handleEditTask = useTaskStore((state) => state.handleEditTask);
+  const handleSettingsMenu = useTaskStore((state) => state.handleSettingsMenu);
 
   // get tasks from server
   const { data, isLoading } = useQuery({
@@ -59,26 +35,13 @@ function UserPage() {
     },
   });
 
-  // console.log(status);
+  useEffect(() => {
+    document.body.style.overflow = taskModal ? 'hidden' : 'auto';
 
-  const handleEdit = (id: number) => {
-    setTaskModal(true);
-    // set task to edit
-    document.body.style.overflow = 'hidden';
-    const task = data.tasks.find((task: TaskType) => task.id === id);
-    setEditTask(task);
-  };
-
-  const handleNewTask = () => {
-    setTaskModal(true);
-    setNewTask(true);
-  };
-
-  const handleCloseModal = () => {
-    setTaskModal(false);
-    setNewTask(false);
-    document.body.style.overflow = 'auto';
-  };
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [taskModal]);
 
   return (
     <>
@@ -133,7 +96,7 @@ function UserPage() {
               status={
                 task.status as 'completed' | 'in-progress' | 'wont-do' | 'to-do'
               }
-              onEdit={handleEdit}
+              onEdit={() => handleEditTask(task.id, data)}
             />
           ))}
 
@@ -155,8 +118,8 @@ function UserPage() {
         <div className="fixed bottom-0 right-0 m-8">
           <div
             className="relative"
-            onMouseEnter={() => setSettingsMenu(true)}
-            onMouseLeave={() => setSettingsMenu(false)}
+            onMouseEnter={() => handleSettingsMenu(true)}
+            onMouseLeave={() => handleSettingsMenu(false)}
           >
             <button className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
               Settings
@@ -181,13 +144,7 @@ function UserPage() {
         </div>
       </div>
 
-      {taskModal && (
-        <EditTask
-          newTask={newTask}
-          data={editTask}
-          handleCloseModal={handleCloseModal}
-        />
-      )}
+      {taskModal && <TaskModal />}
     </>
   );
 }
