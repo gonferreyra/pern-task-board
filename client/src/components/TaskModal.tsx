@@ -8,6 +8,7 @@ import queryClient from '../config/queryClient';
 import toast from 'react-hot-toast';
 import { createTaskSchema, updateTaskSchema } from '../lib/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
+import useTaskStore from '../stores/taskStore';
 
 const buttons = [
   { value: 'in-progress', text: 'In Progress' },
@@ -15,13 +16,11 @@ const buttons = [
   { value: 'wont-do', text: 'Won"t Do' },
 ];
 
-type EditTaskProps = {
-  data: any;
-  newTask: boolean;
-  handleCloseModal: () => void;
-};
+function TaskModal() {
+  const newTask = useTaskStore((state) => state.newTask);
+  const data = useTaskStore((state) => state.editTask);
+  const handleCloseModal = useTaskStore((state) => state.handleCloseModal);
 
-function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   const methods = useForm({
     defaultValues: newTask
       ? { name: '', description: '', icon: '' }
@@ -198,4 +197,4 @@ function EditTask({ newTask, data, handleCloseModal }: EditTaskProps) {
   );
 }
 
-export default EditTask;
+export default TaskModal;
