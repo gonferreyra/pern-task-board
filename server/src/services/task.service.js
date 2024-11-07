@@ -1,4 +1,3 @@
-import { where } from 'sequelize';
 import { CustomError } from '../helpers/customError.js';
 import TaskModel from '../models/task.model.js';
 
