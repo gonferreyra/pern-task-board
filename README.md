@@ -17,7 +17,11 @@
   <a href="#credits">Credits</a> •
 </p>
 
-<video src='TaskBoard.mp4' width="100%" autoplay loop></video>
+## Preview
+
+https://github.com/user-attachments/assets/557a3ee7-0f7d-430b-a25e-1b92c4607cde
+
+
 
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
