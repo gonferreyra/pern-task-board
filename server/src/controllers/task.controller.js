@@ -44,14 +44,9 @@ export const getUserTasksHandler = async (req, res, next) => {
         userId: req.userId,
       },
     });
-    if (!tasks) {
-      throw new CustomError(`There are no tasks with the id ${req.userId}`);
-    }
 
-    if (tasks.length < 1) {
-      res
-        .status(404)
-        .json({ message: `There are no tasks with the id ${req.userId}` });
+    if (!tasks || tasks.length < 1) {
+      res.status(200).json({ tasks: [] });
     }
 
     // response
