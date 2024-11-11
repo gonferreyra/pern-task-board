@@ -21,8 +21,6 @@
 
 https://github.com/user-attachments/assets/557a3ee7-0f7d-430b-a25e-1b92c4607cde
 
-
-
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
 ![React Query](https://img.shields.io/badge/-React%20Query-FF4154?style=for-the-badge&logo=react%20query&logoColor=white)
@@ -63,6 +61,38 @@ $ npm run dev - Front-end
 
 > **Note**
 > Keep in mind that you have to install the dependencies of both the client and server folders.
+
+```bash
+# client env (check example.env file)
+VITE_API_URL=
+
+# server env (check example.env file)
+# ENVIROMENT
+NODE_ENV=development
+
+#SERVER
+SERVER_PORT=
+SERVER_HOSTNAME=
+
+# FRONTEND URL
+APP_ORIGIN=
+
+#DB
+DB_NAME=
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+
+#JWT
+JWT_SECRET=
+JWT_REFRESH_SECRET=
+
+#RESEND
+RESEND_API_KEY=
+EMAIL_SENDER=
+
+```
 
 ## Credits
 
